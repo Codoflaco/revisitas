@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revisitas - App de Gestión</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #2980b9;
+      --background-color: #f4f4f4;
+      --text-color: #333;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--primary-color);
+      color: white;
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: var(--secondary-color);
+    }
+
+    nav a {
+      padding: 0.75rem 1rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      flex: 1 0 auto;
+      text-align: center;
+    }
+
+    nav a:hover {
+      background: #1f618d;
+    }
+
+    section {
+      background: white;
+      margin: 1rem auto;
+      padding: 1.5rem;
+      max-width: 1000px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: var(--primary-color);
+      margin-top: 0;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+    }
+
+    a {
+      color: var(--secondary-color);
+    }
+
+    footer {
+      background: var(--primary-color);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      nav a {
+        flex: 1 1 100%;
+        padding: 1rem;
+        font-size: 1rem;
+      }
+
+      section {
+        padding: 1rem;
+        margin: 0.5rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Revisitas</h1>
+    <p>Tu App para gestionar tus revisitas eficientemente</p>
+  </header>
+
+  <nav>
+    <a href="#inicio">Inicio</a>
+    <a href="#faq">FAQ</a>
+    <a href="#privacidad">Privacidad</a>
+    <a href="#acerca">Acerca</a>
+    <a href="#descarga">Descarga</a>
+  </nav>
+
+  <section id="inicio">
+    <h2>Inicio</h2>
+    <p>Gracias por utilizar <strong>Revisitas</strong>, tu herramienta esencial para la gestión de tus revisitas. Aquí encontrarás respuestas, tutoriales y soporte.</p>
+    <p>¿Necesitas ayuda? Explora nuestras guías rápidas, consulta las preguntas frecuentes (FAQ) o ponte en contacto con soporte.</p>
+    <p><strong>¡Tus sugerencias son importantes!</strong> No dudes en hacérnoslas saber.</p>
+    <p><strong>¡Gracias por elegir Revisitas!</strong></p>
+  </section>
+
+  <section id="faq">
+    <h2>Preguntas Frecuentes (FAQ)</h2>
+    <ul>
+      <li><strong>¿Cómo añado una nueva persona o contacto?</strong><br />Toca el botón “+” y completa los datos. Luego, guarda en la esquina superior derecha.</li>
+      <li><strong>¿Cómo configuro la frecuencia?</strong><br />Selecciona la próxima fecha y actualízala tras cada visita.</li>
+      <li><strong>¿Qué pasa si me salto una visita?</strong><br />Aparecerá un círculo rojo. Reprograma la fecha.</li>
+      <li><strong>¿Cómo edito un contacto?</strong><br />Toca el contacto, luego el ícono de lápiz. Edita y guarda.</li>
+      <li><strong>¿Sincroniza entre dispositivos?</strong><br />No automáticamente. Puedes exportar/importar un archivo.</li>
+      <li><strong>¿Funciona sin internet?</strong><br />Sí, excepto el mapa para nuevas ubicaciones.</li>
+      <li><strong>¿Tiene costos?</strong><br />No. Es gratuita y sin compras internas.</li>
+      <li><strong>Soporte técnico:</strong><br />
+        <a href="mailto:developer@sitiodeejemplo.com">developer@sitiodeejemplo.com</a>
+      </li>
+    </ul>
+  </section>
+
+  <section id="privacidad">
+    <h2>Política de Privacidad</h2>
+    <p><strong>Última actualización:</strong> 4 de junio de 2025</p>
+    <ol>
+      <li><strong>No recopilamos datos personales.</strong> Todo se guarda localmente en tu dispositivo.</li>
+      <li><strong>Permisos:</strong> Contactos y ubicación solo se usan localmente.</li>
+      <li><strong>Seguridad:</strong> No hay riesgo de filtración. Protege tu dispositivo.</li>
+      <li><strong>Cambios:</strong> Se anunciarán en la app.</li>
+      <li><strong>Contacto:</strong> <a href="mailto:developer@sitiodeejemplo.com">developer@sitiodeejemplo.com</a></li>
+    </ol>
+    <p><strong>Tu privacidad es nuestra prioridad.</strong></p>
+    <p>🔹 El equipo de Revisitas</p>
+  </section>
+
+  <section id="acerca">
+    <h2>Acerca de</h2>
+    <p>Revisitas es una app desarrollada para ayudar a los publicadores en su labor. No está afiliada a ninguna organización religiosa. Es un proyecto personal sin fines de lucro.</p>
+  </section>
+
+  <section id="descarga">
+    <h2>Descarga</h2>
+    <p>Descarga la app desde la tienda oficial:</p>
+    <p><a href="#" target="_blank"><strong>📥 Descargar en App Store</strong></a></p>
+  </section>
+
+  <footer>
+    &copy; 2025 Revisitas. Todos los derechos reservados.
+  </footer>
+</body>
+</html>
