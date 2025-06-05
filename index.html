@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Revisitas - App de Gestión</title>
+  <title>Revisitas</title>
   <style>
     :root {
       --primary-color: #2c3e50;
-      --secondary-color: #2980b9;
-      --background-color: #f4f4f4;
+      --accent-color: #2980b9;
+      --background-color: #f8f8f8;
       --text-color: #333;
     }
 
@@ -18,46 +18,50 @@
 
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--background-color);
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--background-color);
       color: var(--text-color);
       line-height: 1.6;
     }
 
     header {
-      background: var(--primary-color);
+      background-color: var(--primary-color);
       color: white;
+      padding: 1.5rem;
       text-align: center;
-      padding: 1.5rem 1rem;
     }
 
     nav {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      background: var(--secondary-color);
+      background-color: var(--accent-color);
     }
 
     nav a {
-      padding: 0.75rem 1rem;
       color: white;
+      padding: 0.75rem 1rem;
       text-decoration: none;
-      font-weight: 600;
-      flex: 1 0 auto;
+      font-weight: bold;
       text-align: center;
     }
 
     nav a:hover {
-      background: #1f618d;
+      background-color: #1f5f8b;
+    }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 1.5rem;
     }
 
     section {
-      background: white;
-      margin: 1rem auto;
+      background-color: white;
+      margin: 1rem 0;
       padding: 1.5rem;
-      max-width: 1000px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     h2 {
@@ -65,16 +69,8 @@
       margin-top: 0;
     }
 
-    ul {
-      padding-left: 1.2rem;
-    }
-
-    a {
-      color: var(--secondary-color);
-    }
-
     footer {
-      background: var(--primary-color);
+      background-color: var(--primary-color);
       color: white;
       text-align: center;
       padding: 1rem;
@@ -85,85 +81,119 @@
       nav a {
         flex: 1 1 100%;
         padding: 1rem;
-        font-size: 1rem;
+      }
+
+      main {
+        padding: 1rem;
       }
 
       section {
         padding: 1rem;
-        margin: 0.5rem;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Revisitas</h1>
-    <p>Tu App para gestionar tus revisitas eficientemente</p>
-  </header>
 
-  <nav>
-    <a href="#inicio">Inicio</a>
-    <a href="#faq">FAQ</a>
-    <a href="#privacidad">Privacidad</a>
-    <a href="#acerca">Acerca</a>
-    <a href="#descarga">Descarga</a>
-  </nav>
+<header>
+  <h1>Nombre de tu App: Revisitas.</h1>
+</header>
+
+<nav>
+  <a href="#inicio">Inicio</a>
+  <a href="#faq">Preguntas Frecuentes</a>
+  <a href="#privacidad">Política de Privacidad</a>
+  <a href="#acerca">Acerca de</a>
+  <a href="#descarga">Descarga</a>
+</nav>
+
+<main>
+  <section id="descripcion">
+    <h2>Breve Descripción de la App</h2>
+    <p>Revisitas es la app que te ayuda a recordar y realizar tus revisitas, asegurándote de que no pierdas ninguna cada semana de actividad. Está dirigida a los publicadores que participan en la predicación de casa en casa y desean una herramienta que les ayude a cumplir con su servicio completamente.</p>
+  </section>
 
   <section id="inicio">
     <h2>Inicio</h2>
-    <p>Gracias por utilizar <strong>Revisitas</strong>, tu herramienta esencial para la gestión de tus revisitas. Aquí encontrarás respuestas, tutoriales y soporte.</p>
-    <p>¿Necesitas ayuda? Explora nuestras guías rápidas, consulta las preguntas frecuentes (FAQ) o ponte en contacto con soporte.</p>
-    <p><strong>¡Tus sugerencias son importantes!</strong> No dudes en hacérnoslas saber.</p>
-    <p><strong>¡Gracias por elegir Revisitas!</strong></p>
+    <p>Gracias por utilizar Revisitas, tu herramienta esencial para la gestión de tus revisitas. En esta página, encontrarás respuestas a tus preguntas, tutoriales paso a paso y asistencia personalizada para aprovechar al máximo todas las funciones de la aplicación.</p>
+    <p>¿Necesitas ayuda? Explora nuestras guías rápidas, consulta las preguntas frecuentes (FAQ) o ponte en contacto con nuestro equipo de soporte. Estamos aquí para asegurarnos de que tu experiencia sea fluida y productiva.</p>
+    <p>¡Tus sugerencias son importantes para nosotros! Si tienes alguna o encuentras algún problema, no dudes en hacérnoslo saber.</p>
+    <p>¡Gracias por elegir Revisitas!</p>
   </section>
 
   <section id="faq">
     <h2>Preguntas Frecuentes (FAQ)</h2>
-    <ul>
-      <li><strong>¿Cómo añado una nueva persona o contacto?</strong><br />Toca el botón “+” y completa los datos. Luego, guarda en la esquina superior derecha.</li>
-      <li><strong>¿Cómo configuro la frecuencia?</strong><br />Selecciona la próxima fecha y actualízala tras cada visita.</li>
-      <li><strong>¿Qué pasa si me salto una visita?</strong><br />Aparecerá un círculo rojo. Reprograma la fecha.</li>
-      <li><strong>¿Cómo edito un contacto?</strong><br />Toca el contacto, luego el ícono de lápiz. Edita y guarda.</li>
-      <li><strong>¿Sincroniza entre dispositivos?</strong><br />No automáticamente. Puedes exportar/importar un archivo.</li>
-      <li><strong>¿Funciona sin internet?</strong><br />Sí, excepto el mapa para nuevas ubicaciones.</li>
-      <li><strong>¿Tiene costos?</strong><br />No. Es gratuita y sin compras internas.</li>
-      <li><strong>Soporte técnico:</strong><br />
-        <a href="mailto:developer@sitiodeejemplo.com">developer@sitiodeejemplo.com</a>
-      </li>
-    </ul>
+    <p><strong>¿Cómo añado una nueva persona o contacto en Revisitas?</strong><br>
+    En la página de inicio haz clic en el botón añadir “+” que se encuentra en la esquina superior derecha, llena los datos de tu revisita. Por lo menos debes ingresar Nombre Apellido y Dirección. En la dirección incluye: Calle, Número, Colonia y Ciudad, para que el localizador pueda ubicarlo en el mapa. Para guardar la revisita haz clic en el botón de guardar ubicado en la esquina superior derecha de la pantalla.</p>
+
+    <p><strong>¿Cómo configuro la frecuencia de las "revisitas"?</strong><br>
+    Cada que ingreses una revisita selecciona la fecha y la hora en que planeas hacerla. Cuando la hagas, entra y actualiza las notas y cambia la fecha y la hora para la siguiente vez que la harás.</p>
+
+    <p><strong>¿Qué sucede si me salto una visita programada?</strong><br>
+    La aplicación te indicará con un círculo rojo que la fecha en que debías haber hecho la revisita ya pasó. Edita el contacto y reprograma la revisita ingresando una fecha y hora nuevas.</p>
+
+    <p><strong>¿Cómo puedo editar la información de un contacto?</strong><br>
+    En la pantalla de inicio haz clic en el contacto que deseas editar. Se abrira una pantalla con todos los datos del contacto. Haz clic en el botón de editar (el lápiz) ubicado en la esquina superior derecha. La pantalla cambiará al modo de edición. Haz los cambios que desees. Has click en el botón de guardar ubicado en la esquina superior derecha. Ahora puedes regresar a la pantalla inicial.</p>
+
+    <p><strong>¿Revisitas sincroniza datos entre diferentes dispositivos?</strong><br>
+    No hace una sincronización automática pero si permite guardar las revisitas en un archivo, el cual puedes transferir a otro dispositivo con la aplicación instalada y hacer una restauración de los contactos desde el archivo transferido.</p>
+
+    <p><strong>¿La app funciona sin conexión a internet?</strong><br>
+    Si. Solo no podrás ver la ubicación en el mapa de los contactos nuevos hasta que restablezcas la conexión a internet.</p>
+
+    <p><strong>¿Es Revisitas gratuita? ¿Tiene compras dentro de la app?</strong><br>
+    Revisitas es gratuita y no tiene compras en línea.</p>
+
+    <p><strong>¿Cómo puedo obtener soporte técnico o reportar un problema?</strong><br>
+    Puedes enviar tu solicitud  al correo del desarrollador: <br>
+    developer@sitiodeejemplo.com</p>
   </section>
 
   <section id="privacidad">
     <h2>Política de Privacidad</h2>
-    <p><strong>Última actualización:</strong> 4 de junio de 2025</p>
-    <ol>
-      <li><strong>No recopilamos datos personales.</strong> Todo se guarda localmente en tu dispositivo.</li>
-      <li><strong>Permisos:</strong> Contactos y ubicación solo se usan localmente.</li>
-      <li><strong>Seguridad:</strong> No hay riesgo de filtración. Protege tu dispositivo.</li>
-      <li><strong>Cambios:</strong> Se anunciarán en la app.</li>
-      <li><strong>Contacto:</strong> <a href="mailto:developer@sitiodeejemplo.com">developer@sitiodeejemplo.com</a></li>
-    </ol>
-    <p><strong>Tu privacidad es nuestra prioridad.</strong></p>
-    <p>🔹 El equipo de Revisitas</p>
+    <p><strong>Última actualización:44 de junio de 2025</strong></p>
+    <p>En Revisitas, valoramos tu privacidad y nos comprometemos a proteger tus datos personales. Esta política explica cómo manejamos la información dentro de nuestra aplicación.</p>
+    
+    <p><strong>1. Recopilación y Uso de Datos</strong><br>
+    No recopilamos ni almacenamos información personal. La aplicación no recaba datos del usuario ni accede a la información que gestionas dentro de ella.
+    Los datos de contactos se guardan únicamente en tu dispositivo. Tú tienes el control total sobre esta información, y la app no la transmite a servidores externos ni a terceros.
+    La ubicación de los contactos se muestra en mapas, pero estos datos no son recopilados ni almacenados por la app. La funcionalidad de mapas utiliza servicios externos (como Google Maps o Apple Maps), los cuales pueden tener sus propias políticas de privacidad.</p>
+
+    <p><strong>2. Permisos de la Aplicación</strong><br>
+    Revisitas puede solicitar los siguientes permisos para su correcto funcionamiento:
+    Acceso a contactos: Solo para gestionar y mostrar la información dentro de la app. No se comparte con nosotros ni con terceros.
+    Ubicación (opcional): Únicamente para mostrar direcciones en el mapa. No se almacena ni se envía a nuestros servidores.</p>
+
+    <p><strong>3. Seguridad de los Datos</strong><br>
+    Dado que la app no recopila ni almacena información personal, no hay riesgo de filtración de datos desde nuestros sistemas. Sin embargo, recomendamos proteger tu dispositivo con contraseñas seguras y mantenerlo actualizado.</p>
+
+    <p><strong>4. Cambios en esta Política</strong><br>
+    Nos reservamos el derecho de actualizar esta política ocasionalmente. Cualquier cambio será notificado dentro de la aplicación.</p>
+
+    <p><strong>5. Contacto</strong><br>
+    Si tienes preguntas sobre esta política o el manejo de datos en [Nombre de la App], contáctanos en:<br>
+    📧developer@sitiodeejemplo.com<br>
+    🌐www.sitiodeejemplo.com</p>
+
+    <p>Gracias por confiar en Revisitas.<br>
+    Tu privacidad es nuestra prioridad.<br>
+    🔹 El equipo de Revisitas</p>
   </section>
 
   <section id="acerca">
     <h2>Acerca de</h2>
-    <p>Revisitas es una app desarrollada para ayudar a los publicadores en su labor. No está afiliada a ninguna organización religiosa. Es un proyecto personal sin fines de lucro.</p>
+    <p>Revisitas es una aplicación desarrollada con el único propósito de proporcionar al usuario un herramienta para facilitar su labor como publicador, no tiene ninguna relación con la organización de los Testigos de Jehová, es una labor por iniciativa del desarrollador sin ningún interés económico o de otra índole.</p>
   </section>
 
   <section id="descarga">
     <h2>Descarga</h2>
-    <p>Descarga la app desde la tienda oficial:</p>
-    <p><a href="#" target="_blank"><strong>📥 Descargar en App Store</strong></a></p>
+    <p>[enlace a la app store]</p>
   </section>
+</main>
 
-  <footer>
-    &copy; 2025 Revisitas. Todos los derechos reservados.
-  </footer>
+<footer>
+  &copy; 2025 Revisitas. Todos los derechos reservados.
+</footer>
+
 </body>
 </html>
