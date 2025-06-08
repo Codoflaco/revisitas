@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Incluir todos los archivos de base de datos.
+         Room guarda sus archivos en el dominio "database".
+         path="." significa incluir todo en ese dominio. -->
+    <include domain="database" path="."/>
+
+    <!-- Opcionalmente, si conoces el nombre exacto de tu archivo de base de datos
+         (por ejemplo, si lo has configurado explícitamente en Room), puedes ser más específico:
+    <include domain="database" path="nombre_de_tu_base_de_datos.db"/>
+         Pero path="." es generalmente suficiente y más robusto si Room añade archivos auxiliares.
+    -->
+
+    <!-- Incluir todos los archivos de SharedPreferences -->
+    <include domain="sharedpref" path="."/>
+
+    <!-- Incluir archivos en el almacenamiento interno (getFilesDir()) -->
+    <include domain="file" path="."/>
+
+    <!-- Si tienes archivos específicos que NO quieres respaldar, puedes excluirlos.
+         Por ejemplo, si tienes un archivo de preferencias específico para diagnósticos
+         que no debe ser respaldado:
+    <exclude domain="sharedpref" path="diagnostic_prefs.xml"/>
+    -->
+</full-backup-content>
