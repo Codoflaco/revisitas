@@ -35,7 +35,7 @@ android {
         val localPropertiesFile = rootProject.file("local.properties") // Busca en la raíz del proyecto
 
         // 3. Declara una variable para almacenar la clave cargada (usa 'var' si la asignas en diferentes ramas)
-        var apiKeyCargada: String = "API_KEY_POR_DEFECTO_SI_FALLA_LA_CARGA" // Un valor por defecto para saber si algo falló
+        var apiKeyCargada = "API_KEY_POR_DEFECTO_SI_FALLA_LA_CARGA" // Un valor por defecto para saber si algo falló
 
         // 4. Verifica si el archivo existe y cárgalo
         if (localPropertiesFile.exists() && localPropertiesFile.isFile) {
