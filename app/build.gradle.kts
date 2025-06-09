@@ -37,7 +37,7 @@ android {
                     localProperties.load(inputStream)
                 }
                 apiKeyCargada = localProperties.getProperty("GOOGLE_MAPS_API_KEY", apiKeyCargada)
-            } catch (e: java.io.IOException) {
+            } catch (_: java.io.IOException) {
             }
         }
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = apiKeyCargada
