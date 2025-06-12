@@ -409,8 +409,7 @@ fun ContactItem(
             ) {
                 VisitStatusIndicator(
                     statusColor = VisitStatusColorUtil.getVisitStatusColor(
-                        nextVisitTimestamp = contact.nextVisitTimestamp,
-                        referenceStartDateForNextVisit = contact.nextVisitLastSetTimestamp
+                        nextVisitTimestamp = contact.nextVisitTimestamp
                     )
                 )
 

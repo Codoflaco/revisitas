@@ -175,8 +175,7 @@ fun ItineraryMapScreen(
                     contactsToShowOnMap.forEach { contact ->
 
                         val statusColor = VisitStatusColorUtil.getVisitStatusColor(
-                            nextVisitTimestamp = contact.nextVisitTimestamp,
-                            referenceStartDateForNextVisit = contact.nextVisitLastSetTimestamp
+                            nextVisitTimestamp = contact.nextVisitTimestamp
                         )
                         val markerHue = mapComposeColorToHue(statusColor)
                         Marker(
