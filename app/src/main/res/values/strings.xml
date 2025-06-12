@@ -68,5 +68,11 @@
     <string name="not_available">N/A</string>
     <string name="show_map">Show map</string>
     <string name="no_contacts_with_location_to_display_on_map">No contacts with location to display on map</string>
+            <!-- ... otros strings ... -->
+    <string name="legend_overdue">Past</string>
+    <string name="legend_today">Today</string>
+    <string name="legend_due_soon">Near</string>
+    <string name="legend_due_far">Far</string>
+    <string name="legend_no_date">No date</string>
 
 </resources>

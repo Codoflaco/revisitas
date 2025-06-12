@@ -80,11 +80,31 @@ import com.example.revisit.ui.util.BackupUtils
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.shape.CircleShape
+import com.example.revisit.ui.theme.VisitStatusAppColors
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 
-
+@Composable
+fun LegendItem(color: Color, label: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(end = 8.dp) // Espacio entre items de la leyenda
+    ) {
+        Box(
+            modifier = Modifier
+                .size(12.dp) // Tamaño del círculo de color
+                .clip(CircleShape)
+                .background(color)
+        )
+        Spacer(modifier = Modifier.width(4.dp)) // Espacio entre el círculo y el texto
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall // Estilo de texto pequeño para la leyenda
+        )
+    }
+}
 
 @Composable
 fun VisitStatusIndicator(statusColor: Color, size: Dp = 12.dp) {
@@ -641,6 +661,40 @@ fun ContactScreen(
                 .fillMaxSize()
                 .padding(paddingValuesFromScaffold)
         ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp), // Espacio vertical alrededor de la leyenda
+                horizontalArrangement = Arrangement.SpaceEvenly // O Arrangement.Start si prefieres
+            ) {
+                // Asegúrate de que estos colores y strings sean los correctos
+                // y coincidan con lo que usa VisitStatusColorUtil y el mapa.
+                // Los strings ("Pasada", "Hoy", etc.) deberían venir de tus recursos (R.string...)
+
+                LegendItem(
+                    color = VisitStatusAppColors.Overdue, // ROJO
+                    label = stringResource(R.string.legend_overdue) // ej: "Pasada"
+                )
+                LegendItem(
+                    color = VisitStatusAppColors.Today,   // NARANJA
+                    label = stringResource(R.string.legend_today)   // ej: "Hoy"
+                )
+                LegendItem(
+                    color = VisitStatusAppColors.DueSoon, // AMARILLO
+                    label = stringResource(R.string.legend_due_soon) // ej: "Cercana"
+                )
+                LegendItem(
+                    color = VisitStatusAppColors.DueFar,  // VERDE
+                    label = stringResource(R.string.legend_due_far)  // ej: "Lejana"
+                )
+                // Si tienes un color para "Sin Fecha" y quieres incluirlo:
+                // LegendItem(
+                //     color = VisitStatusAppColors.NoDate, // GRIS o el que uses
+                //     label = stringResource(R.string.legend_no_date) // ej: "Sin Fecha"
+                // )
+            }
+
             ContactList(
                 contacts = filteredContacts,
                 viewModel = viewModel,
