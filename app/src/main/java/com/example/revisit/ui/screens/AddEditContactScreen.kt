@@ -176,21 +176,23 @@ fun AddEditContactScreen(
                         currentContact?.let { contactToDelete ->
                             coroutineScope.launch {
                                 isLoading = true
-//                                try {
-//                                    viewModel.delete(contactToDelete)
-//                                    Toast.makeText(context, context.getString(R.string.contact_deleted_successfully, name), Toast.LENGTH_SHORT).show()
-//                                    onNavigateBack()
-//                                onNavigateBack()
-//                                } catch (e: Exception) {
-//                                    Log.e("DeleteContactError", "Error deleting contact: ${e.message}", e)
-//                                    Toast.makeText(
-//                                        context,
-//                                        context.getString(R.string.error_deleting_contact, e.localizedMessage ?: context.getString(R.string.unknown_error)),
-//                                        Toast.LENGTH_LONG
-//                                    ).show()
-//                                } finally {
-//                                    isLoading = false
-//                                }
+                                /*
+                                try {
+                                viewModel.delete(contactToDelete)
+                                Toast.makeText(context, context.getString(R.string.contact_deleted_successfully, name), Toast.LENGTH_SHORT).show()
+                                onNavigateBack()
+                                onNavigateBack()
+                                } catch (e: Exception) {
+                                Log.e("DeleteContactError", "Error deleting contact: ${e.message}", e)
+                                Toast.makeText(
+                                context,
+                                context.getString(R.string.error_deleting_contact, e.localizedMessage ?: context.getString(R.string.unknown_error)),
+                                Toast.LENGTH_LONG
+                                ).show()
+                                } finally {
+                                isLoading = false
+                                }
+                                */
                             }
                         }
                     }

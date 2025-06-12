@@ -48,12 +48,11 @@ import com.example.revisit.ui.theme.VisitStatusAppColors
 
 @Composable
 private fun mapComposeColorToHue(composeColor: Color): Float {
-    // Asegúrate de que estos valores coincidan con los que devuelve tu VisitStatusColorUtil
-    // Es RECOMENDABLE usar constantes compartidas.
-    val colorDueSoon = MaterialTheme.colorScheme.tertiary // Ejemplo
-    val colorOverdue = MaterialTheme.colorScheme.error     // Ejemplo
-    val colorScheduled = MaterialTheme.colorScheme.primary // Ejemplo
-    // val colorSomeOtherStatus = Color(0xFF....) // Otro color personalizado
+
+    MaterialTheme.colorScheme.tertiary
+    MaterialTheme.colorScheme.error
+    MaterialTheme.colorScheme.primary
+
 
     return when (composeColor) {
         VisitStatusAppColors.DueSoon -> BitmapDescriptorFactory.HUE_YELLOW // Amarillo
@@ -62,10 +61,7 @@ private fun mapComposeColorToHue(composeColor: Color): Float {
         VisitStatusAppColors.DueFar -> BitmapDescriptorFactory.HUE_GREEN     // Verde
         VisitStatusAppColors.ColorNoDate -> BitmapDescriptorFactory.HUE_AZURE // O el HUE que prefieras para "sin fecha"
         else -> {
-            // Este caso ahora es menos probable, pero mantenlo como fallback
-            // Puedes loguear aquí para ver qué color inesperado está llegando
-            // Log.w("MapColorDebug", "Unexpected color in mapComposeColorToHue: $composeColor")
-            BitmapDescriptorFactory.HUE_CYAN // Un color diferente para el fallback para que lo notes
+            BitmapDescriptorFactory.HUE_CYAN
         }
     }
 }
@@ -131,7 +127,7 @@ fun ItineraryMapScreen(
                             1000
                         )
                     }
-                } catch (e: IllegalStateException) {
+                } catch (_: IllegalStateException) {
                     if (contactsToShowOnMap.isNotEmpty()) {
                         if (contactsToShowOnMap.size == 1) {
                             contactsToShowOnMap.firstOrNull()?.let {
