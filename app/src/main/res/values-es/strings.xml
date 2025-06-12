@@ -67,4 +67,6 @@
     <string name="scroll_for_more">Desliza para cargar más</string>
     <string name="not_available">N/A</string>
     <string name="show_map">Ver mapa</string>
+    <string name="no_contacts_with_location_to_display_on_map">Sin contactos con ubicación para mostrar en el mapa</string>
+
 </resources>

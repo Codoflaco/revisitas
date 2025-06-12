@@ -67,4 +67,6 @@
     <string name="scroll_for_more">Scroll for more</string>
     <string name="not_available">N/A</string>
     <string name="show_map">Show map</string>
+    <string name="no_contacts_with_location_to_display_on_map">No contacts with location to display on map</string>
+
 </resources>

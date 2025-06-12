@@ -39,6 +39,36 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
+import androidx.compose.material3.MaterialTheme
+import com.example.revisit.ui.util.VisitStatusColorUtil
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import androidx.compose.ui.graphics.Color
+import com.example.revisit.ui.theme.VisitStatusAppColors
+
+
+@Composable
+private fun mapComposeColorToHue(composeColor: Color): Float {
+    // Asegúrate de que estos valores coincidan con los que devuelve tu VisitStatusColorUtil
+    // Es RECOMENDABLE usar constantes compartidas.
+    val colorDueSoon = MaterialTheme.colorScheme.tertiary // Ejemplo
+    val colorOverdue = MaterialTheme.colorScheme.error     // Ejemplo
+    val colorScheduled = MaterialTheme.colorScheme.primary // Ejemplo
+    // val colorSomeOtherStatus = Color(0xFF....) // Otro color personalizado
+
+    return when (composeColor) {
+        VisitStatusAppColors.DueSoon -> BitmapDescriptorFactory.HUE_YELLOW // Amarillo
+        VisitStatusAppColors.Overdue -> BitmapDescriptorFactory.HUE_RED      // Rojo
+        VisitStatusAppColors.Today -> BitmapDescriptorFactory.HUE_ORANGE   // Naranja
+        VisitStatusAppColors.DueFar -> BitmapDescriptorFactory.HUE_GREEN     // Verde
+        VisitStatusAppColors.ColorNoDate -> BitmapDescriptorFactory.HUE_AZURE // O el HUE que prefieras para "sin fecha"
+        else -> {
+            // Este caso ahora es menos probable, pero mantenlo como fallback
+            // Puedes loguear aquí para ver qué color inesperado está llegando
+            // Log.w("MapColorDebug", "Unexpected color in mapComposeColorToHue: $composeColor")
+            BitmapDescriptorFactory.HUE_CYAN // Un color diferente para el fallback para que lo notes
+        }
+    }
+}
 
 @Suppress("ControlFlowWithEmptyBody", "ControlFlowWithEmptyBody")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -130,7 +160,9 @@ fun ItineraryMapScreen(
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        Box(modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize()) {
             if (isLoading && contactsToShowOnMap.isEmpty()) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
@@ -145,16 +177,25 @@ fun ItineraryMapScreen(
                     )
                 ) {
                     contactsToShowOnMap.forEach { contact ->
+
+                        val statusColor = VisitStatusColorUtil.getVisitStatusColor(
+                            nextVisitTimestamp = contact.nextVisitTimestamp,
+                            referenceStartDateForNextVisit = contact.nextVisitLastSetTimestamp
+                        )
+                        val markerHue = mapComposeColorToHue(statusColor)
                         Marker(
                             state = MarkerState(position = LatLng(contact.latitude!!, contact.longitude!!)),
                             title = "${contact.name} ${contact.lastName ?: ""}".trim(),
-                            snippet = contact.address
+                            snippet = contact.address,
+                            icon = BitmapDescriptorFactory.defaultMarker(markerHue)
                         )
                     }
                 }
 
                 if (isLoading && contactsToShowOnMap.isNotEmpty()) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter))
+                    LinearProgressIndicator(modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter))
                 }
 
                 if (!isLoading && contactsToShowOnMap.isEmpty()) {
