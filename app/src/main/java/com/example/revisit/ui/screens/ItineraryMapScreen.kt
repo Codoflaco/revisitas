@@ -38,7 +38,6 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.launch
 import androidx.compose.material3.MaterialTheme
 import com.example.revisit.ui.util.VisitStatusColorUtil
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -75,7 +74,7 @@ fun ItineraryMapScreen(
     contactIdsString: String?,
     viewModel: ContactViewModel
 ) {
-    val coroutineScope = rememberCoroutineScope()
+
     var contactsToShowOnMap by remember { mutableStateOf<List<ContactEntity>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
