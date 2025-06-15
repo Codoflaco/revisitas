@@ -512,7 +512,7 @@ fun ContactScreen(
                 contactsByName.filter { contact ->
                     val territoryMatches = if (territoryFilter.isNotBlank()) {
                         contact.territory?.toString()
-                            ?.contains(territoryFilter, ignoreCase = true) == true
+                            ?.equals(territoryFilter, ignoreCase = true) == true
                     } else {
                         true
                     }
