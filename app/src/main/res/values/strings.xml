@@ -74,5 +74,6 @@
     <string name="legend_due_soon">Near</string>
     <string name="legend_due_far">Far</string>
     <string name="legend_no_date">No date</string>
+    <string name="contact_verification_and_valid_address">No contacts or invalid addresses.</string>
 
 </resources>

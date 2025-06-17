@@ -74,4 +74,5 @@
     <string name="legend_due_soon">Cercana</string>
     <string name="legend_due_far">Lejana</string>
     <string name="legend_no_date">Sin fecha</string>
+    <string name="contact_verification_and_valid_address">Verifica que haya contactos y que tengan una dirección válida.</string>
 </resources>

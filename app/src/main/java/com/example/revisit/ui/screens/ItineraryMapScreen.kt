@@ -1,4 +1,4 @@
-package com.example.revisit.ui.screens // o tu paquete de UI
+package com.example.revisit.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,10 +43,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import androidx.compose.ui.graphics.Color
 import com.example.revisit.ui.theme.VisitStatusAppColors
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.unit.dp
 
 
 @Composable
-private fun mapComposeColorToHue(composeColor: Color): Float {
+internal fun mapComposeColorToHue(composeColor: Color): Float {
 
     MaterialTheme.colorScheme.tertiary
     MaterialTheme.colorScheme.error
@@ -97,96 +100,18 @@ fun ItineraryMapScreen(
                 emptyList()
             }
         } else {
-            // Asumo que viewModel.allContactsSortedByName es un StateFlow o similar
-            // y que ya estás recolectándolo en el ViewModel o aquí si fuera necesario
-            tempContacts = viewModel.allContactsSortedByName.value // Asegúrate que esto tenga el valor más reciente
+            tempContacts = viewModel.allContactsSortedByName.value
         }
 
         contactsToShowOnMap = tempContacts.filter { it.latitude != null && it.longitude != null }
         Log.d("MapDebug", "Primer LE: Contactos filtrados para el mapa: ${contactsToShowOnMap.size}")
 
         if (tempContacts.isNotEmpty() && tempContacts.size != contactsToShowOnMap.size) {
-            Log.d("MapDebug", "Primer LE: Algunos contactos no tienen coordenadas.")
-            // Aquí podrías mostrar un Toast o un mensaje al usuario si lo deseas
+            Log.d("MapDebug", "Primer LE: Algunos contactos no tienen dirección.")
         }
-        // viewModel.getContact(5) // Eliminar si era solo una prueba
-
-        // NO hay manipulación de la cámara aquí
         isLoading = false
         Log.d("MapDebug", "Primer LE: Carga de contactos finalizada. isLoading = false")
     }
-
-
-//    LaunchedEffect(contactIdsString, viewModel) {
-//        isLoading = true
-//
-//        val tempContacts: List<ContactEntity>
-//        if (!contactIdsString.isNullOrEmpty()) {
-//            val idsList = contactIdsString.split(',')
-//                .mapNotNull { it.trim().toIntOrNull() }
-//            tempContacts = if (idsList.isNotEmpty()) {
-//                viewModel.getContactsByIds(idsList)
-//            } else {
-//                emptyList()
-//            }
-//        } else {
-//            tempContacts = viewModel.allContactsSortedByName.value
-//            tempContacts.forEachIndexed { index, contact ->
-//            }
-//        }
-//
-//        contactsToShowOnMap = tempContacts.filter { it.latitude != null && it.longitude != null }
-//        contactsToShowOnMap.forEachIndexed { index, contact ->
-//        }
-//
-//        if (tempContacts.isNotEmpty() && tempContacts.size != contactsToShowOnMap.size) {
-//        }
-//        viewModel.getContact(5)
-//        if (contactsToShowOnMap.isNotEmpty()) {
-//            val boundsBuilder = LatLngBounds.Builder()
-//            contactsToShowOnMap.forEach { contact ->
-//                boundsBuilder.include(LatLng(contact.latitude!!, contact.longitude!!))
-//            }
-//            coroutineScope.launch {
-//                try {
-//                    if (contactsToShowOnMap.size > 1) {
-//                        cameraPositionState.animate(
-//                            CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 150),
-//                            1000
-//                        )
-//                    } else {
-//                        val singleContact = contactsToShowOnMap.first()
-//                        cameraPositionState.animate(
-//                            CameraUpdateFactory.newLatLngZoom(
-//                                LatLng(
-//                                    singleContact.latitude!!,
-//                                    singleContact.longitude!!
-//                                ), 15f
-//                            ),
-//                            1000
-//                        )
-//                    }
-//                } catch (_: IllegalStateException) {
-//                    if (contactsToShowOnMap.isNotEmpty()) {
-//                        if (contactsToShowOnMap.size == 1) {
-//                            contactsToShowOnMap.firstOrNull()?.let {
-//                                cameraPositionState.position = CameraPosition.fromLatLngZoom(
-//                                    LatLng(
-//                                        it.latitude!!,
-//                                        it.longitude!!
-//                                    ), 15f
-//                                )
-//                            }
-//                        } else {
-//                        }
-//                    }
-//                }
-//            }
-//        } else {
-//            cameraPositionState.position = CameraPosition.fromLatLngZoom(defaultCameraPosition, 2f)
-//        }
-//        isLoading = false
-//    }
 
     Scaffold(
         topBar = {
@@ -208,8 +133,28 @@ fun ItineraryMapScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            if (isLoading && contactsToShowOnMap.isEmpty()) {
+            if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else if (contactsToShowOnMap.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.no_contacts_to_display_on_map),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.contact_verification_and_valid_address),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                }
             } else {
                 GoogleMap(
                     modifier = Modifier.fillMaxSize(),
@@ -269,7 +214,6 @@ fun ItineraryMapScreen(
                 return@LaunchedEffect
             }
 
-            // El mapa SÍ está cargado (isMapLoaded es true)
             if (contactsToShowOnMap.isNotEmpty()) {
                 Log.d("MapDebug", "Segundo LE: Mapa cargado y hay contactos. Preparando animación.")
                 val boundsBuilder = LatLngBounds.Builder()
@@ -277,8 +221,6 @@ fun ItineraryMapScreen(
                     boundsBuilder.include(LatLng(contact.latitude!!, contact.longitude!!))
                 }
 
-                // Usar el scope del LaunchedEffect para la corutina
-                // o el rememberCoroutineScope si prefieres, aunque el del LE es más autocontenido aquí.
                 try {
                     if (contactsToShowOnMap.size > 1) {
                         Log.d("MapDebug", "Segundo LE: Animando a múltiples contactos.")
@@ -298,8 +240,7 @@ fun ItineraryMapScreen(
                     }
                 } catch (e: IllegalStateException) {
                     Log.e("MapDebug", "Segundo LE: Error al animar la cámara: ${e.message}")
-                    // Fallback si la animación falla (aunque con isMapLoaded=true, es menos probable)
-                    if (contactsToShowOnMap.isNotEmpty()) { // Doble check
+                    if (contactsToShowOnMap.isNotEmpty()) {
                         if (contactsToShowOnMap.size == 1) {
                             contactsToShowOnMap.firstOrNull()?.let {
                                 Log.d("MapDebug", "Segundo LE: Fallback - Estableciendo posición para un contacto.")
@@ -308,7 +249,6 @@ fun ItineraryMapScreen(
                                 )
                             }
                         } else {
-                            // Podrías intentar un cameraPositionState.move() con los bounds si la animación falla
                             Log.d("MapDebug", "Segundo LE: Fallback - Múltiples contactos, considerar move().")
                             try {
                                 cameraPositionState.move(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 150))
@@ -318,58 +258,10 @@ fun ItineraryMapScreen(
                         }
                     }
                 }
-            } else { // isMapLoaded es true, pero no hay contactos
+            } else {
                 Log.d("MapDebug", "Segundo LE: Mapa cargado pero no hay contactos. Estableciendo posición por defecto.")
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(defaultCameraPosition, 2f)
             }
         }
-
-
-//        LaunchedEffect(contactsToShowOnMap, isMapLoaded) {
-//            if (isMapLoaded && contactsToShowOnMap.isNotEmpty()) {
-//                val boundsBuilder = LatLngBounds.Builder()
-//                contactsToShowOnMap.forEach { contact ->
-//                    boundsBuilder.include(LatLng(contact.latitude!!, contact.longitude!!))
-//                }
-//                coroutineScope.launch {
-//                    try {
-//                        if (contactsToShowOnMap.size > 1) {
-//                            cameraPositionState.animate(
-//                                CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 150),
-//                                1000
-//                            )
-//                        } else {
-//                            val singleContact = contactsToShowOnMap.first()
-//                            cameraPositionState.animate(
-//                                CameraUpdateFactory.newLatLngZoom(
-//                                    LatLng(
-//                                        singleContact.latitude!!,
-//                                        singleContact.longitude!!
-//                                    ), 15f
-//                                ),
-//                                1000
-//                            )
-//                        }
-//                    } catch (e: IllegalStateException) {
-//                        if (contactsToShowOnMap.isNotEmpty()) {
-//                            if (contactsToShowOnMap.size == 1) {
-//                                contactsToShowOnMap.firstOrNull()?.let {
-//                                    cameraPositionState.position = CameraPosition.fromLatLngZoom(
-//                                        LatLng(
-//                                            it.latitude!!,
-//                                            it.longitude!!
-//                                        ), 15f
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            } else if (isMapLoaded && contactsToShowOnMap.isEmpty()) { // Si el mapa está cargado pero no hay contactos
-//                cameraPositionState.position =
-//                    CameraPosition.fromLatLngZoom(defaultCameraPosition, 2f)
-//            }
-//
-//        }
     }
 }

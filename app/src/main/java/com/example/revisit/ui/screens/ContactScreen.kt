@@ -606,7 +606,7 @@ fun ContactScreen(
                     title = {
                         Text(
                         text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typography.headlineLarge,
+                        style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onBackground,
                         )
                     },

@@ -49,7 +49,9 @@ import com.example.revisit.R
 import com.example.revisit.data.db.ContactEntity
 import com.example.revisit.ui.ContactViewModel
 import com.example.revisit.ui.util.DateTimeUtils
+import com.example.revisit.ui.util.VisitStatusColorUtil
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -124,7 +126,7 @@ fun ContactDetailScreen(
                         Text(
                             text = titleText,
                             textAlign = TextAlign.End,
-                            style = MaterialTheme.typography.headlineLarge,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onBackground,
                         )
                     }
@@ -310,10 +312,15 @@ fun ContactDetailScreen(
                                     tiltGesturesEnabled = true
                                 )
                             ) {
+                                val statusColor = VisitStatusColorUtil.getVisitStatusColor(
+                                    nextVisitTimestamp = currentContact.nextVisitTimestamp
+                                )
+                                val markerHue = mapComposeColorToHue(statusColor)
                                 Marker(
                                     state = MarkerState(position = mapTargetLocation),
                                     title = currentContact.name,
-                                    snippet = currentContact.address
+                                    snippet = currentContact.address,
+                                    icon = BitmapDescriptorFactory.defaultMarker(markerHue)
                                 )
                             }
                         }
