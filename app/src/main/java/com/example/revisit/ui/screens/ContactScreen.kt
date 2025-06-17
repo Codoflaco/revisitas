@@ -81,10 +81,16 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.KeyboardType
 import com.example.revisit.ui.theme.VisitStatusAppColors
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.text.input.ImeAction
 
 @Composable
 fun LegendItem(color: Color, label: String) {
@@ -238,6 +244,8 @@ fun SwipeToDeleteWrapper(
 }
 
 
+
+
 @Composable
 fun FilterControls(
     territoryFilter: String,
@@ -246,6 +254,9 @@ fun FilterControls(
     onNextVisitDateClick: () -> Unit,
     onClearFilters: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val commonFieldHeight = 56.dp
 
     Column(
@@ -277,7 +288,16 @@ fun FilterControls(
                     .defaultMinSize(minHeight = commonFieldHeight),
                 singleLine = true,
                 shape = MaterialTheme.shapes.small,
-
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                    }
+                )
             )
 
             Box(
