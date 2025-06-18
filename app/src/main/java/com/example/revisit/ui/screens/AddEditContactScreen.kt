@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -293,7 +294,7 @@ fun AddEditContactScreen(
                     Text(
                         if (contactId == null) stringResource(id = R.string.add_new_contact)
                         else stringResource(id = R.string.edit_contact),
-                                style = MaterialTheme.typography.headlineLarge,
+                                style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
 
@@ -395,6 +396,7 @@ fun AddEditContactScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
+                        .imePadding()
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -414,7 +416,12 @@ fun AddEditContactScreen(
                         label = { Text(stringResource(id = R.string.contact_lastname_label)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        leadingIcon = { Icon(Icons.Filled.PersonOutline, contentDescription = null) }
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.PersonOutline,
+                                contentDescription = null
+                            )
+                        }
                     )
                     OutlinedTextField(
                         value = phoneNumber,
@@ -442,24 +449,29 @@ fun AddEditContactScreen(
                         singleLine = true,
                         leadingIcon = { Icon(Icons.Filled.Map, contentDescription = null) }
                     )
-
-                    Text(stringResource(id = R.string.creation_or_first_visit_label), style = MaterialTheme.typography.titleMedium)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(creationDateTimeDisplay, style = MaterialTheme.typography.titleMedium)
-//                        IconButton(onClick = { showCreationTimeDialog = true }) {
-//                            Icon(Icons.Filled.EditCalendar, contentDescription = stringResource(id = R.string.edit_creation_time))
-//                        }
+                        //horizontalArrangement = Arrangement.SpaceBetween,
+                    )
+                    {
+                        Text(
+                            stringResource(id = R.string.creation_or_first_visit_label),
+                            style = MaterialTheme.typography.titleMedium,
+                         )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            text = creationDateTimeDisplay,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.outline
+                        )
                     }
-
-                    Text(stringResource(id = R.string.next_visit_label), style = MaterialTheme.typography.titleMedium)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Text(stringResource(id = R.string.next_visit_label), style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             text = nextVisitDateTimeDisplay,
                             style = MaterialTheme.typography.titleMedium,

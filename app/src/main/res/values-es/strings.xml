@@ -10,7 +10,7 @@
     <string name="last_name_label">Apellido</string>
     <string name="phone_number_label">Teléfono</string>
     <string name="address_label">Dirección</string>
-    <string name="territory_label">Territorio</string>
+    <string name="territory_label">Terr.</string>
     <string name="creation_first_visit_title">Primera visita:</string>
     <string name="change_creation_time">Cambiar hora de primera visita</string>
     <string name="next_visit_title">Revisita:</string>
@@ -40,13 +40,13 @@
     <string name="contact_lastname_label">Apellido</string>
     <string name="contact_phone_label">Teléfono</string>
     <string name="contact_address_label">Dirección</string>
-    <string name="contact_territory_label">Territorio (Number)</string>
+    <string name="contact_territory_label">Territorio</string>
     <string name="contact_notes_label">Notas</string>
     <string name="contact_profile_label">Perfil</string>
     <string name="contact_detail_title">Detalles del contacto</string>
-    <string name="creation_or_first_visit_label">Primera visita</string>
+    <string name="creation_or_first_visit_label">Primera visita:</string>
     <string name="edit_creation_time">Cambiar hora de 1era visita</string>
-    <string name="next_visit_label">Revisitar:</string>
+    <string name="next_visit_label">Revisita:</string>
     <string name="next_visit_label_filter">Fecha Revisita:</string>
     <string name="next_visit">Revisita</string>
     <string name="edit_next_visit_date">Cambiar Fecha de Revisita</string>
@@ -75,4 +75,10 @@
     <string name="legend_due_far">Lejana</string>
     <string name="legend_no_date">Sin fecha</string>
     <string name="contact_verification_and_valid_address">Verifica que haya contactos y que tengan una dirección válida.</string>
+    <string name="backup_options_button_desc">Opciones de Respaldo</string>
+    <string name="restore_button_desc">Restaurar Respaldo</string>
+    <string name="backup_options_title">Opciones de Respaldo</string>
+    <string name="backup_option_save_local">Guardar en el dispositivo</string>
+    <string name="backup_option_share_file">Compartir archivo de respaldo</string>
+    <string name="share_backup_file_title">Compartir Archivo de Respaldo</string>
 </resources>

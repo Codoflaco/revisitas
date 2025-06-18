@@ -12,6 +12,12 @@ object BackupUtils {
 
     private const val BACKUP_FILE_NAME = "contacts_backup.json"
 
+    fun contactsToJson(contacts: List<ContactEntity>): String {
+        // Implementation to convert a list of ContactEntity to a JSON string
+        val gson = Gson()
+        return gson.toJson(contacts)
+    }
+
     fun backupToJsonFile(context: Context, contacts: List<ContactEntity>): Uri? {
         return try {
             val json = Gson().toJson(contacts)

@@ -10,7 +10,7 @@
     <string name="last_name_label">Last Name</string>
     <string name="phone_number_label">Phone Number</string>
     <string name="address_label">Address</string>
-    <string name="territory_label">Territory</string>
+    <string name="territory_label">Terr.</string>
     <string name="creation_first_visit_title">First Visit:</string>
     <string name="change_creation_time">Change Creation Time</string>
     <string name="next_visit_title">Next Visit:</string>
@@ -44,7 +44,7 @@
     <string name="contact_notes_label">Notes</string>
     <string name="contact_profile_label">Profile</string>
     <string name="contact_detail_title">Contact Details</string>
-    <string name="creation_or_first_visit_label">First Visit</string>
+    <string name="creation_or_first_visit_label">First Visit:</string>
     <string name="edit_creation_time">Change Creation Time</string>
     <string name="next_visit_label">Next Visit:</string>
     <string name="next_visit_label_filter">Next Visit Date:</string>
@@ -75,5 +75,10 @@
     <string name="legend_due_far">Far</string>
     <string name="legend_no_date">No date</string>
     <string name="contact_verification_and_valid_address">No contacts or invalid addresses.</string>
-
+    <string name="backup_options_button_desc">Backup options</string>
+    <string name="restore_button_desc">Restore Backup</string>
+    <string name="backup_options_title">Backup Options</string>
+    <string name="backup_option_save_local">Save in device</string>
+    <string name="backup_option_share_file">Share backup file</string>
+    <string name="share_backup_file_title">Share Backup File</string>
 </resources>
