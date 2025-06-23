@@ -25,6 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,7 +37,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -127,7 +130,7 @@ fun ContactDetailScreen(
                             text = titleText,
                             textAlign = TextAlign.End,
                             style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onBackground,
+                            color = colorScheme.onBackground,
                         )
                     }
                 },
@@ -273,14 +276,18 @@ fun ContactDetailScreen(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f))
-                                    .border(1.dp, MaterialTheme.colorScheme.error, RoundedCornerShape(8.dp))
+                                    .background(colorScheme.errorContainer.copy(alpha = 0.3f))
+                                    .border(
+                                        1.dp,
+                                        colorScheme.error,
+                                        RoundedCornerShape(8.dp)
+                                    )
                                     .padding(16.dp)
                             ) {
                                 Text(
                                     text = geocodingErrorMessage!!,
                                     textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                    color = colorScheme.onErrorContainer
                                 )
                             }
                         }
@@ -291,7 +298,11 @@ fun ContactDetailScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(Color.LightGray.copy(alpha = 0.1f))
-                                    .border(1.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                    .border(
+                                        1.dp,
+                                        Color.Gray.copy(alpha = 0.3f),
+                                        RoundedCornerShape(8.dp)
+                                    )
                                     .padding(16.dp)
                             ) {
                                 Text(
@@ -303,7 +314,7 @@ fun ContactDetailScreen(
                         }
                         mapTargetLocation != null -> {
                             GoogleMap(
-                                modifier = Modifier.fillMaxSize().matchParentSize(),
+                                modifier = Modifier.fillMaxSize(), // Quité .matchParentSize(), fillMaxSize es suficiente
                                 cameraPositionState = cameraPositionState,
                                 uiSettings = MapUiSettings(
                                     zoomControlsEnabled = true,
@@ -312,15 +323,47 @@ fun ContactDetailScreen(
                                     tiltGesturesEnabled = true
                                 )
                             ) {
-                                val statusColor = VisitStatusColorUtil.getVisitStatusColor(
+                                val currentContext = LocalContext.current
+
+                                val statusComposeColor = VisitStatusColorUtil.getVisitStatusColor( // Nombre de variable cambiado para claridad
                                     nextVisitTimestamp = currentContact.nextVisitTimestamp
                                 )
-                                val markerHue = mapComposeColorToHue(statusColor)
+
+                                val labelTextColorInt = colorScheme.onSurfaceVariant.toArgb()
+                                val labelBackgroundColorInt = colorScheme.surfaceVariant.toArgb()
+
+                                val customIconWithLabel = remember(
+                                    currentContact.id,
+                                    currentContact.name,
+                                    currentContact.lastName,
+                                    statusComposeColor,
+                                    labelTextColorInt,      // 2. Añade los colores como claves para remember
+                                    labelBackgroundColorInt //    para que el bloque se re-ejecute si cambian.
+                                ) {
+                                    // Log.d para depuración si es necesario
+                                    try {
+                                        createMarkerWithLabelBitmap( // Asegúrate de que esta función sea accesible aquí
+                                            context = currentContext,
+                                            name = currentContact.name,
+                                            lastName = currentContact.lastName ?: "",
+                                            markerIconResId = R.drawable.ic_map_pin, // Asume que tienes este drawable
+                                            markerTintColor = statusComposeColor,
+                                            labelTextColor = labelTextColorInt,          // 3. Usa los valores Int pre-calculados
+                                            labelBackgroundColor = labelBackgroundColorInt, // 3. Usa los valores Int pre-calculados
+                                            iconWidth = 70, // Ajusta según necesites
+                                            iconHeight = 70, // Ajusta según necesites
+                                            labelOffsetY = 0 // Ajusta según necesites
+                                        )
+                                    } catch (_: Exception) {
+                                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED) // Fallback
+                                    }
+                                }
+
                                 Marker(
-                                    state = MarkerState(position = mapTargetLocation),
-                                    title = currentContact.name,
-                                    snippet = currentContact.address,
-                                    icon = BitmapDescriptorFactory.defaultMarker(markerHue)
+                                    state = MarkerState(position = mapTargetLocation), // mapTargetLocation no debe ser null en esta rama
+                                    icon = customIconWithLabel, // << CAMBIADO
+                                    anchor = Offset(0.5f, 0.95f) // << AÑADIDO (ajusta el valor Y según sea necesario)
+
                                 )
                             }
                         }
@@ -330,7 +373,11 @@ fun ContactDetailScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(Color.LightGray.copy(alpha = 0.1f))
-                                    .border(1.dp, Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                    .border(
+                                        1.dp,
+                                        Color.Gray.copy(alpha = 0.3f),
+                                        RoundedCornerShape(8.dp)
+                                    )
                                     .padding(16.dp)
                             ) {
                                 Text(
@@ -355,11 +402,11 @@ fun DetailEntryStyled(
 ) {
     val labelHorizontalPadding = 6.dp
     val labelVerticalPadding = 1.dp
-    val outlineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.8f)
+    val outlineColor = colorScheme.outline.copy(alpha = 0.8f)
     val cornerRadius = 8.dp
     val borderWidth = 1.dp
     val labelHeightEstimate = 18.dp
-    val labelBackgroundColor = MaterialTheme.colorScheme.background
+    val labelBackgroundColor = colorScheme.background
 
     Box(
         modifier = modifier
@@ -385,7 +432,7 @@ fun DetailEntryStyled(
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp),
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.primary,
+            color = colorScheme.primary,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .offset(
@@ -404,11 +451,11 @@ fun DetailEntryStyled(
 fun NotesDetailItemWithInternalScroll(label: String, value: String) {
     val labelHorizontalPadding = 6.dp
     val labelVerticalPadding = 1.dp
-    val outlineColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.8f)
+    val outlineColor = colorScheme.outline.copy(alpha = 0.8f)
     val cornerRadius = 8.dp
     val borderWidth = 1.dp
     val labelHeightEstimate = 18.dp
-    val labelBackgroundColor = MaterialTheme.colorScheme.background
+    val labelBackgroundColor = colorScheme.background
 
     Box(
         modifier = Modifier
@@ -439,7 +486,7 @@ fun NotesDetailItemWithInternalScroll(label: String, value: String) {
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp),
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.primary,
+            color = colorScheme.primary,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .offset(

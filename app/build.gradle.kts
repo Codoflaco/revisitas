@@ -101,5 +101,13 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 
+    // ... otras dependencias ...
+    implementation("com.google.maps.android:maps-compose:4.3.3") // Revisa la última versión
+    implementation("com.google.android.gms:play-services-maps:18.2.0") // Revisa la última versión
+
+    // Para ViewModel y StateFlow con ciclo de vida
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0")
+
 
 }

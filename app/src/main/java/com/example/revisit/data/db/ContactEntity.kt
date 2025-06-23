@@ -18,7 +18,6 @@ data class ContactEntity(
     val address: String?,
     val phoneNumber: String?,
 
-    // Defaulted to current time, can be overridden if needed
     val creationOrFirstVisitTimestamp: Long = System.currentTimeMillis(),
     val nextVisitLastSetTimestamp: Long,
 
