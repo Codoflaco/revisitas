@@ -69,7 +69,7 @@
     <string name="show_map">Show map</string>
     <string name="no_contacts_with_location_to_display_on_map">No contacts with location to display on map</string>
             <!-- ... otros strings ... -->
-    <string name="legend_overdue">Past</string>
+    <string name="legend_overdue">Overdue</string>
     <string name="legend_today">Today</string>
     <string name="legend_due_soon">Near</string>
     <string name="legend_due_far">Far</string>
@@ -81,4 +81,88 @@
     <string name="backup_option_save_local">Save in device</string>
     <string name="backup_option_share_file">Share backup file</string>
     <string name="share_backup_file_title">Share Backup File</string>
+    <string name="pick_location_on_map">Toca para obtener una dirección desde el mapa</string>
+    <string name="no_address_found_for_location">No se pudo obtener una dirección desde esa ubicación</string>
+    <string name="geocoding_service_unavailable">Servicio de geocodificación no disponible. Intenta de nuevo más tarde.</string>
+    <string name="invalid_lat_lng_for_geocoding">Datos inválidos para geocodificación.</string>
+    <string name="map_location_cleared_due_to_address_change">Ubicación del mapa borrada debido a cambio en la dirección. La nueva dirección se usará para la ubicación.</string>
+    <string name="selected_location_marker_title">Ubicación Seleccionada</string>
+    <string name="tap_button_to_confirm_marker_snippet">Toca el botón para confirmar</string>
+    <string name="confirm_location_button">Confirmar Ubicación</string>
+    <string name="tap_on_map_to_select_location_instruction">Toca en el mapa para seleccionar una ubicación</string>
+    <string name="no_contacts_or_location_to_display_on_map">No hay contactos con ubicación o no se
+        pudo obtener tu ubicación para mostrar en el mapa.
+    </string>
+    <string name="grant_location_permission">Conceder Permiso de Ubicación</string>
+    <string name="select_location_on_map">Seleccionar Ubicación</string>
+    <string name="confirm_location">Confirmar Ubicación</string>
+    <string name="selected_location">Ubicación Seleccionada</string>
+    <string name="navigate_up">Atrás</string>
+
+    <string name="contact_facade_image">Facade image of the contact</string>
+    <string name="add_facade_image">Add facade image</string>
+    <string name="tap_to_add_image">Tap to add image</string>
+    <string name="error_accessing_image">Could not access the selected image.</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="storage_permission_rationale_for_images">To select an image for the contact, the app needs permission to access your photos or media. Please grant the permission.</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="permission_denied_go_to_settings">Permission denied. Please enable it in app settings to select an image.</string>
+    <string name="camera_permission_required_title">Permiso de Cámara Requerido</string>
+    <string name="camera_permission_rationale">Para tomar una foto del contacto, necesitamos acceso
+        a tu cámara.
+    </string>
+    <string name="confirm_photo_title">Confirmar Foto</string>
+    <string name="photo_preview_desc">Vista previa de la foto</string>
+    <string name="select_photo_button">Seleccionar Foto</string>
+    <string name="photo_capture_cancelled">Toma de foto cancelada.</string>
+    <string name="error_preparing_camera">Error al preparar la cámara.</string>
+    <string name="photo_selected">Foto seleccionada.</string>
+    <string name="photo_discarded">Foto descartada.</string>
+    <string name="take_photo_desc">Tomar foto para el contacto</string>
+    <string name="contact_photo_label">Foto del Contacto:</string>
+    <string name="contact_photo_desc">Foto actual del contacto</string>
+    <string name="remove_photo_button">Quitar Foto</string>
+    <!-- ... tus strings existentes ... -->
+
+    <!-- Strings para ContactDetailScreen (relacionados con la foto) -->
+    <string name="view_contact_photo_desc">Ver foto del contacto</string>
+    <string name="no_photo_for_contact_toast">No hay foto para %s</string>
+    <string name="contact_not_loaded_toast">El contacto aún no se ha cargado</string>
+
+    <!-- Strings para PhotoViewScreen -->
+    <string name="photo_view_title">Ver Foto</string>
+    <string name="contact_photo_full_desc">Foto del contacto a pantalla completa</string>
+    <string name="image_not_available">Imagen no disponible</string>
+    <string name="loading_contact_details">Cargando detalles del contacto...</string>
+    <string name="contact_not_found">Contacto no encontrado.</string>
+
+
+
+
+    <!-- Strings que ya usabas pero quizás no estaban centralizadas -->
+    <!-- <string name="contact_detail_title">Detalle del Contacto</string> -->
+
+    <!-- <string name="back">Atrás</string> -->
+
+    <!-- <string name="edit_contact">Editar Contacto</string> -->
+
+    <!-- <string name="name_label">Nombre</string> -->
+
+    <!-- <string name="last_name_label">Apellido</string> -->
+
+    <!-- <string name="phone_number_label">Teléfono</string> -->
+
+    <!-- <string name="territory_label">Territorio</string> -->
+
+    <!-- <string name="address_label">Dirección</string> -->
+
+    <!-- <string name="notes_label">Notas</string> -->
+
+    <!-- <string name="creation_or_first_visit_label">Creación/1ª Visita</string> -->
+
+    <!-- <string name="next_visit_label">Próxima Visita</string> -->
+
+    <!-- <string name="no_address_to_display_on_map">No hay dirección para mostrar en el mapa.</string> -->
+
+    <!-- <string name="map_unavailable">Mapa no disponible</string> -->
 </resources>

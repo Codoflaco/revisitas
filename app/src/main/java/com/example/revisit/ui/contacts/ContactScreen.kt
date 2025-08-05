@@ -1,4 +1,4 @@
-package com.example.revisit.ui.screens
+package com.example.revisit.ui.contacts
 
 import android.content.Intent
 import android.net.Uri
@@ -32,7 +32,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -67,7 +66,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState // Importado
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
+// import androidx.compose.runtime.derivedStateOf // ELIMINADO SI NO SE USA EN OTRO LADO
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,20 +88,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.revisit.R
-import com.example.revisit.data.db.ContactEntity
-import com.example.revisit.ui.ContactViewModel
+import com.example.revisit.data.local.ContactEntity
 import com.example.revisit.ui.theme.VisitStatusAppColors
-import com.example.revisit.ui.util.BackupUtils
-import com.example.revisit.ui.util.DateTimeUtils
+import com.example.revisit.util.BackupUtils
+import com.example.revisit.util.DateTimeUtils
 import com.example.revisit.ui.util.VisitStatusColorUtil
 import kotlinx.coroutines.launch
-import java.io.File // Para la función de compartir (revisar FileProvider)
-import java.io.IOException // Para la función de compartir
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
+import kotlin.math.abs
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 
@@ -155,8 +152,8 @@ fun SwipeToDeleteWrapper(
     ) {
         // Fondo rojo para eliminar
         if (offsetX.value < 0) { // Solo muestra si se está deslizando hacia la izquierda
-            val progress = kotlin.math.abs(offsetX.value) / deleteThreshold
-            val alpha = kotlin.math.min(progress, 1f) // Limita alfa a 1
+            val progress = abs(offsetX.value) / deleteThreshold
+            val alpha = min(progress, 1f) // Limita alfa a 1
 
             Box(
                 modifier = Modifier
@@ -265,11 +262,11 @@ fun SwipeToDeleteWrapper(
 
 @Composable
 fun FilterControls(
-    territoryFilter: String,
-    onTerritoryChange: (String) -> Unit,
-    nextVisitDateFilterDisplay: String,
-    onNextVisitDateClick: () -> Unit,
-    onClearFilters: () -> Unit
+    territoryFilter: String, // Se mantiene como parámetro
+    onTerritoryChange: (String) -> Unit, // Se mantiene como parámetro
+    nextVisitDateFilterDisplay: String, // Se mantiene como parámetro
+    onNextVisitDateClick: () -> Unit, // Se mantiene como parámetro
+    onClearFilters: () -> Unit // Se mantiene como parámetro
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -499,12 +496,26 @@ fun ContactScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    // Estados de filtros y UI
-    val contactsByName by viewModel.allContactsSortedByName.collectAsState(initial = emptyList())
-    var territoryFilter by remember { mutableStateOf("") }
-    var nextVisitDateFilterTimestamp by remember { mutableStateOf<Long?>(null) }
+    // MODIFICADO: Obtener valores de filtro del ViewModel
+    val territoryFilter by viewModel.territoryFilter.collectAsState()
+    val nextVisitDateFilterTimestamp by viewModel.nextVisitDateFilterTimestamp.collectAsState()
+
+    // MODIFICADO: Obtener la lista filtrada directamente del ViewModel
+    val displayedContacts by viewModel.displayedContacts.collectAsState()
+
+    // Estado local para la UI del DatePicker
     var showDatePickerDialog by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = nextVisitDateFilterTimestamp)
+    // MODIFICADO: Inicializar datePickerState con el valor del ViewModel, pero ten cuidado con la reactividad aquí.
+    // selectedDateMillis se actualiza cuando el usuario confirma en el diálogo.
+    // El initialSelectedDateMillis es para cuando el diálogo se muestra por primera vez.
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = nextVisitDateFilterTimestamp // Esto está bien para la apertura inicial del diálogo
+    )
+
+    // ELIMINADO: La lógica de `derivedStateOf` para filteredContacts ya no es necesaria aquí.
+    // val contactsByName by viewModel.allContactsSortedByName.collectAsState(initial = emptyList())
+    // var territoryFilter by remember { mutableStateOf("") } // ELIMINADO
+    // var nextVisitDateFilterTimestamp by remember { mutableStateOf<Long?>(null) } // ELIMINADO
 
     val nextVisitDateDisplay = if (nextVisitDateFilterTimestamp != null) {
         remember(nextVisitDateFilterTimestamp) { DateTimeUtils.formatDateForDisplay(nextVisitDateFilterTimestamp) }
@@ -512,6 +523,8 @@ fun ContactScreen(
         stringResource(id = R.string.next_visit_label_filter)
     }
 
+    // ELIMINADO: filteredContacts ahora es 'displayedContacts' del ViewModel
+    /*
     val filteredContacts by remember(contactsByName, territoryFilter, nextVisitDateFilterTimestamp) {
         derivedStateOf {
             // ... (lógica de filtrado sin cambios) ...
@@ -542,6 +555,7 @@ fun ContactScreen(
             }
         }
     }
+    */
 
     // Estado para la hoja inferior de opciones de respaldo
     var showBackupOptionsBottomSheet by remember { mutableStateOf(false) }
@@ -596,7 +610,7 @@ fun ContactScreen(
                 val uri = BackupUtils.backupToJsonFile(context, contacts)
                 if (uri != null) {
                     val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                        type = "application/json"
+                        this.type = "application/json"
                         putExtra(Intent.EXTRA_STREAM, uri)
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
@@ -625,7 +639,8 @@ fun ContactScreen(
                         datePickerState.selectedDateMillis?.let { selectedMillisUTC ->
                             val localDateUTC = Instant.ofEpochMilli(selectedMillisUTC).atZone(ZoneOffset.UTC).toLocalDate()
                             val startOfDayDeviceZone = localDateUTC.atStartOfDay(ZoneId.systemDefault())
-                            nextVisitDateFilterTimestamp = startOfDayDeviceZone.toInstant().toEpochMilli()
+                            // MODIFICADO: Actualizar el filtro en el ViewModel
+                            viewModel.updateNextVisitDateFilter(startOfDayDeviceZone.toInstant().toEpochMilli())
                         }
                     }
                 ) { Text(stringResource(id = R.string.ok)) }
@@ -662,11 +677,14 @@ fun ContactScreen(
                             Icon(Icons.Default.Restore, contentDescription = stringResource(R.string.restore_button_desc))
                         }
                         IconButton(onClick = {
-                            val contactIdsString = filteredContacts.joinToString(",") { it.id.toString() }
-                            if (contactIdsString.isNotEmpty()) { // Solo muestra el mapa si hay contactos filtrados
+                            // MODIFICADO: Usar displayedContacts del ViewModel
+                            val contactIdsString = displayedContacts.joinToString(",") { it.id.toString() }
+                            if (contactIdsString.isNotEmpty()) {
                                 onShowMapClick(contactIdsString)
                             } else {
-                                // Opcional: Mostrar un Toast si no hay contactos para el mapa
+                                // Si displayedContacts está vacía, onShowMapClick("") se llamará
+                                // para que NavHost lo interprete como "ALL" (para mostrar un mapa vacío o mensaje).
+                                onShowMapClick("")
                             }
                         }) {
                             Icon(Icons.Filled.Map, contentDescription = stringResource(id = R.string.show_map))
@@ -677,14 +695,13 @@ fun ContactScreen(
                     }
                 )
                 FilterControls(
-                    territoryFilter = territoryFilter,
-                    onTerritoryChange = { territoryFilter = it },
+                    territoryFilter = territoryFilter, // NUEVO USO: del ViewModel
+                    onTerritoryChange = { newTerritory -> viewModel.updateTerritoryFilter(newTerritory) }, // MODIFICADO: Llama al ViewModel
                     nextVisitDateFilterDisplay = nextVisitDateDisplay,
                     onNextVisitDateClick = { showDatePickerDialog = true },
                     onClearFilters = {
-                        territoryFilter = ""
-                        nextVisitDateFilterTimestamp = null
-                        datePickerState.selectedDateMillis = null // También resetea el estado del DatePicker
+                        viewModel.clearFilters() // MODIFICADO: Llama al ViewModel
+                        datePickerState.selectedDateMillis = null // También resetea el estado del DatePicker UI
                     }
                 )
             }
@@ -708,7 +725,7 @@ fun ContactScreen(
             }
 
             ContactList(
-                contacts = filteredContacts,
+                contacts = displayedContacts, // MODIFICADO: Usar displayedContacts del ViewModel
                 viewModel = viewModel,
                 onContactClick = onContactClick,
                 paddingValues = PaddingValues(0.dp), // El padding del Scaffold ya se maneja arriba
@@ -764,13 +781,3 @@ fun ContactScreen(
         }
     }
 }
-
-// Recuerda añadir estas strings a tu archivo strings.xml:
-/*
-<string name="backup_options_button_desc">Opciones de Respaldo</string>
-<string name="restore_button_desc">Restaurar Respaldo</string>
-<string name="backup_options_title">Opciones de Respaldo</string>
-<string name="backup_option_save_local">Guardar en el dispositivo</string>
-<string name="backup_option_share_file">Compartir archivo de respaldo</string>
-<string name="share_backup_file_title">Compartir Archivo de Respaldo</string>
- */

@@ -1,6 +1,8 @@
-package com.example.revisit.ui.screens
+package com.example.revisit.ui.contacts
 
 import android.location.Geocoder
+import android.net.Uri // AÑADIDO para Uri.encode
+import android.widget.Toast // AÑADIDO para Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,12 +17,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Image // AÑADIDO para el icono de imagen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,11 +36,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip // AÑADIDO para el clip del mapa (estaba en tu código original en una sección que no se incluyó antes)
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -49,9 +55,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.revisit.R
-import com.example.revisit.data.db.ContactEntity
-import com.example.revisit.ui.ContactViewModel
-import com.example.revisit.ui.util.DateTimeUtils
+import com.example.revisit.data.local.ContactEntity
+// import com.example.revisit.ui.contacts.ContactViewModel // Ya está importado, no duplicar
+import com.example.revisit.util.DateTimeUtils
 import com.example.revisit.ui.util.VisitStatusColorUtil
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -63,6 +69,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.io.IOException
+import android.util.Log
+import com.example.revisit.ui.util.createMarkerWithLabelBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,37 +85,97 @@ fun ContactDetailScreen(
     var contactLatLng by remember { mutableStateOf<LatLng?>(null) }
     var geocodingErrorMessage by remember { mutableStateOf<String?>(null) }
 
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    val pickedLatState = savedStateHandle?.getLiveData<Double>("picked_latitude")?.observeAsState()
+    val pickedLngState = savedStateHandle?.getLiveData<Double>("picked_longitude")?.observeAsState()
 
+    LaunchedEffect(pickedLatState?.value, pickedLngState?.value, contact) {
+        val lat = pickedLatState?.value
+        val lng = pickedLngState?.value
+
+        Log.d("ContactDetailScreen_Picker", "Picker Effect Triggered. Lat: $lat, Lng: $lng, Contact Loaded: ${contact != null}, Contact ID: ${contact?.id}")
+
+        if (lat != null && lng != null) {
+            val currentContact = contact
+
+            if (currentContact != null && currentContact.id != 0) {
+                Log.d("ContactDetailScreen_Picker", "Attempting to save coordinates for contact ID: ${currentContact.id}. Lat: $lat, Lng: $lng")
+                viewModel.updateContactCoordinates(currentContact.id, lat, lng)
+                contactLatLng = LatLng(lat, lng)
+
+                savedStateHandle.remove<Double>("picked_latitude")
+                savedStateHandle.remove<Double>("picked_longitude")
+                Log.d("ContactDetailScreen_Picker", "Coordinates processed and removed from SavedStateHandle.")
+            } else {
+                if (currentContact == null) {
+                    Log.w("ContactDetailScreen_Picker", "Received coordinates (Lat: $lat, Lng: $lng) but CONTACT IS NULL. Coordinates not saved yet. Waiting for contact to load or effect to re-trigger.")
+                } else {
+                    Log.w("ContactDetailScreen_Picker", "Received coordinates (Lat: $lat, Lng: $lng) but contact ID is invalid (${currentContact.id}). Coordinates not saved.")
+                    savedStateHandle.remove<Double>("picked_latitude")
+                    savedStateHandle.remove<Double>("picked_longitude")
+                }
+            }
+        } else if (contact != null && (pickedLatState?.value != null || pickedLngState?.value != null)) {
+            Log.d("ContactDetailScreen_Picker", "Picker Effect re-triggered due to contact change while lat/lng present. Lat: ${pickedLatState?.value}, Lng: ${pickedLngState?.value}. Attempting to process now.")
+        }
+    }
 
     LaunchedEffect(key1 = contactId) {
         isLoading = true
-        val fetchedContact = viewModel.getContact(contactId)
-        contact = fetchedContact
-        if (fetchedContact?.latitude != null && fetchedContact.longitude != null) {
-            contactLatLng = LatLng(fetchedContact.latitude, fetchedContact.longitude)
-            isLoading = false
-        } else if (!fetchedContact?.address.isNullOrBlank()) {
-            geocodingErrorMessage = null
-            try {
-                val geocoder = Geocoder(context)
-                @Suppress("DEPRECATION")
-                val addresses = geocoder.getFromLocationName(fetchedContact.address, 1)
-                if (addresses != null && addresses.isNotEmpty()) {
-                    val location = addresses[0]
-                    contactLatLng = LatLng(location.latitude, location.longitude)
+        geocodingErrorMessage = null
+        Log.d("ContactDetailScreen_Loader", "Attempting to load contact details for ID: $contactId. isLoading = true.")
+
+        try {
+            val fetchedContact = viewModel.getContact(contactId)
+            Log.d("ContactDetailScreen_Loader", "Fetched contact from ViewModel for ID $contactId: ${if(fetchedContact == null) "NULL" else "VALID (ID: ${fetchedContact.id})"}")
+            contact = fetchedContact
+
+            if (fetchedContact != null) {
+                if (fetchedContact.latitude != null && fetchedContact.longitude != null) {
+                    contactLatLng = LatLng(fetchedContact.latitude, fetchedContact.longitude)
+                    Log.d("ContactDetailScreen_Loader", "Using existing coordinates from fetched contact: $contactLatLng")
+                } else if (!fetchedContact.address.isNullOrBlank()) {
+                    Log.d("ContactDetailScreen_Loader", "No existing coordinates. Attempting to geocode address: '${fetchedContact.address}'")
+                    try {
+                        val geocoder = Geocoder(context)
+                        @Suppress("DEPRECATION")
+                        val addresses = geocoder.getFromLocationName(fetchedContact.address, 1)
+                        if (addresses != null && addresses.isNotEmpty()) {
+                            val location = addresses[0]
+                            contactLatLng = LatLng(location.latitude, location.longitude)
+                            Log.d("ContactDetailScreen_Loader", "Geocoding successful: $contactLatLng")
+                        } else {
+                            geocodingErrorMessage = "Dirección no encontrada por geocodificador."
+                            contactLatLng = null
+                            Log.w("ContactDetailScreen_Loader", "Geocoding failed: Address '${fetchedContact.address}' not found.")
+                        }
+                    } catch (e: IOException) {
+                        geocodingErrorMessage = "Servicio de geocodificación no disponible."
+                        contactLatLng = null
+                        Log.e("ContactDetailScreen_Loader", "Geocoding IOException for address '${fetchedContact.address}'", e)
+                    } catch (e: IllegalArgumentException) {
+                        geocodingErrorMessage = "Argumento inválido para geocodificación (dirección malformada?)."
+                        contactLatLng = null
+                        Log.e("ContactDetailScreen_Loader", "Geocoding IllegalArgumentException for address '${fetchedContact.address}'", e)
+                    }
                 } else {
-                    geocodingErrorMessage = "Dirección no encontrada o inválida."
+                    contactLatLng = null
+                    geocodingErrorMessage = "No hay dirección ni coordenadas para mostrar en el mapa."
+                    Log.d("ContactDetailScreen_Loader", "No coordinates or address available for contact ID $contactId.")
                 }
-            } catch (_: IOException) {
-                geocodingErrorMessage = "Servicio de geocodificación no disponible."
-            } catch (_: IllegalArgumentException) {
-                geocodingErrorMessage = "La dirección proporcionada no es válida."
+            } else {
+                contactLatLng = null
+                Log.w("ContactDetailScreen_Loader", "Contact with ID $contactId was not found in the database.")
             }
-        } else {
+        } catch (e: Exception) {
+            Log.e("ContactDetailScreen_Loader", "An unexpected error occurred while loading contact details for ID $contactId", e)
+            contact = null
             contactLatLng = null
-            geocodingErrorMessage = if (fetchedContact != null) "No hay dirección especificada." else null
+            geocodingErrorMessage = "Error crítico al cargar detalles."
+        } finally {
+            isLoading = false
+            Log.d("ContactDetailScreen_Loader", "Finished loading attempt for contact ID $contactId. isLoading = false. Contact is ${if(contact == null) "NULL" else "NOT NULL"}. contactLatLng is ${if(contactLatLng == null) "NULL" else "SET"}.")
         }
-        isLoading = false
     }
 
     Scaffold(
@@ -128,9 +196,10 @@ fun ContactDetailScreen(
 
                         Text(
                             text = titleText,
-                            textAlign = TextAlign.End,
+                            textAlign = TextAlign.End, // Manteniendo tu TextAlign original
                             style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onBackground,
+                            // modifier = Modifier.weight(1f) // Podrías necesitar ajustar esto si el título es largo y los iconos se desplazan
                         )
                     }
                 },
@@ -140,6 +209,29 @@ fun ContactDetailScreen(
                     }
                 },
                 actions = {
+                    // --- INICIO: IconButton para ver foto ---
+                    IconButton(onClick = {
+                        val currentContact = contact // Captura el estado actual
+                        if (currentContact != null && !currentContact.imageUri.isNullOrBlank()) {
+                            // Asumiendo que 'imageUri' es el campo en ContactEntity
+                            val encodedImageUri = Uri.encode(currentContact.imageUri)
+                            navController.navigate("photoViewScreen/$encodedImageUri")
+                        } else {
+                            val toastMessage = if (currentContact != null) {
+                                context.getString(R.string.no_photo_for_contact_toast, currentContact.name)
+                            } else {
+                                context.getString(R.string.contact_not_loaded_toast)
+                            }
+                            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Image,
+                            contentDescription = stringResource(id = R.string.view_contact_photo_desc)
+                        )
+                    }
+                    // --- FIN: IconButton para ver foto ---
+
                     contact?.let {
                         IconButton(onClick = { navController.navigate("addEditContact/${it.id}") }) {
                             Icon(Icons.Filled.Edit, stringResource(id = R.string.edit_contact))
@@ -155,9 +247,13 @@ fun ContactDetailScreen(
                 .padding(paddingValues)
         ) {
             if (isLoading && contact == null) {
-                // ...
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Cargando detalles del contacto...") // Puedes usar R.string.loading_contact_details
+                }
             } else if (contact == null) {
-                // ...
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Contacto no encontrado.") // Puedes usar R.string.contact_not_found
+                }
             } else {
                 val currentContact = contact!!
 
@@ -187,14 +283,13 @@ fun ContactDetailScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Teléfono y Territorio
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         currentContact.phoneNumber?.takeIf { it.isNotBlank() }?.let {
                             DetailEntryStyled(
-                                label = stringResource(id =R.string.phone_number_label),
+                                label = stringResource(id = R.string.phone_number_label),
                                 value = it,
                                 modifier = Modifier.weight(1f)
                             )
@@ -210,13 +305,14 @@ fun ContactDetailScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Address
-                    currentContact.address?.takeIf { it.isNotBlank() }?.let {
-                        DetailEntryStyled(label = stringResource(id = R.string.address_label), value = it)
+                    currentContact.address?.takeIf { it.isNotBlank() }?.let {addressValue ->
+                        DetailEntryStyled(
+                            label = stringResource(id = R.string.address_label),
+                            value = addressValue
+                        )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
-                    // Notes
                     currentContact.notes?.takeIf { it.isNotBlank() }?.let {
                         NotesDetailItemWithInternalScroll(
                             label = stringResource(id = R.string.notes_label),
@@ -224,7 +320,6 @@ fun ContactDetailScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -235,13 +330,12 @@ fun ContactDetailScreen(
                             modifier = Modifier.weight(1f)
                         )
                         DetailEntryStyled(
-                            label = stringResource(id = R.string.next_visit_label), // Etiqueta más corta
+                            label = stringResource(id = R.string.next_visit_label),
                             value = DateTimeUtils.formatDateTimeForDisplay(currentContact.nextVisitTimestamp),
                             modifier = Modifier.weight(1f)
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-
                 }
 
                 Box(
@@ -252,13 +346,18 @@ fun ContactDetailScreen(
                         .padding(bottom = 16.dp)
                 ) {
                     val mapTargetLocation = contactLatLng
-                    val defaultFallbackLocation = LatLng(37.4220, -122.0840)
+                    // Manteniendo tu valor original de fallbackLocation
+                    val defaultFallbackLocation = LatLng(41.159209110957576, -74.2551922625656)
+                    Log.d("ContactDetail_Debug", "Valor de defaultFallbackLocation ANTES de rememberCameraPositionState: $defaultFallbackLocation")
 
                     val cameraPositionState = rememberCameraPositionState {
+                        Log.d("ContactDetail_Debug", "INIT_CAM - Entrando a fromLatLngZoom. mapTargetLocation: $mapTargetLocation, defaultFallbackLocation: $defaultFallbackLocation")
+
                         position = CameraPosition.fromLatLngZoom(
                             mapTargetLocation ?: defaultFallbackLocation,
                             if (mapTargetLocation != null) 15f else 10f
                         )
+                        Log.d("ContactDetail_Debug", "INIT_CAM - Posición ASIGNADA: ${position.target}, Zoom: ${position.zoom}")
                     }
 
                     LaunchedEffect(mapTargetLocation) {
@@ -314,7 +413,7 @@ fun ContactDetailScreen(
                         }
                         mapTargetLocation != null -> {
                             GoogleMap(
-                                modifier = Modifier.fillMaxSize(), // Quité .matchParentSize(), fillMaxSize es suficiente
+                                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)), // Manteniendo tu clip original
                                 cameraPositionState = cameraPositionState,
                                 uiSettings = MapUiSettings(
                                     zoomControlsEnabled = true,
@@ -323,12 +422,10 @@ fun ContactDetailScreen(
                                     tiltGesturesEnabled = true
                                 )
                             ) {
-                                val currentContext = LocalContext.current
-
-                                val statusComposeColor = VisitStatusColorUtil.getVisitStatusColor( // Nombre de variable cambiado para claridad
+                                val currentContext = LocalContext.current // Cambiado a currentContext para evitar shadowing
+                                val statusComposeColor = VisitStatusColorUtil.getVisitStatusColor(
                                     nextVisitTimestamp = currentContact.nextVisitTimestamp
                                 )
-
                                 val labelTextColorInt = colorScheme.onSurfaceVariant.toArgb()
                                 val labelBackgroundColorInt = colorScheme.surfaceVariant.toArgb()
 
@@ -337,37 +434,36 @@ fun ContactDetailScreen(
                                     currentContact.name,
                                     currentContact.lastName,
                                     statusComposeColor,
-                                    labelTextColorInt,      // 2. Añade los colores como claves para remember
-                                    labelBackgroundColorInt //    para que el bloque se re-ejecute si cambian.
+                                    labelTextColorInt,
+                                    labelBackgroundColorInt
                                 ) {
-                                    // Log.d para depuración si es necesario
                                     try {
-                                        createMarkerWithLabelBitmap( // Asegúrate de que esta función sea accesible aquí
-                                            context = currentContext,
+                                        createMarkerWithLabelBitmap(
+                                            context = currentContext, // Usando currentContext
                                             name = currentContact.name,
                                             lastName = currentContact.lastName ?: "",
-                                            markerIconResId = R.drawable.ic_map_pin, // Asume que tienes este drawable
+                                            markerIconResId = R.drawable.ic_map_pin,
                                             markerTintColor = statusComposeColor,
-                                            labelTextColor = labelTextColorInt,          // 3. Usa los valores Int pre-calculados
-                                            labelBackgroundColor = labelBackgroundColorInt, // 3. Usa los valores Int pre-calculados
-                                            iconWidth = 70, // Ajusta según necesites
-                                            iconHeight = 70, // Ajusta según necesites
-                                            labelOffsetY = 0 // Ajusta según necesites
+                                            labelTextColor = labelTextColorInt,
+                                            labelBackgroundColor = labelBackgroundColorInt,
+                                            iconWidth = 70,
+                                            iconHeight = 70,
+                                            labelOffsetY = 0
                                         )
-                                    } catch (_: Exception) {
-                                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED) // Fallback
+                                    } catch (e: Exception) {
+                                        Log.e("ContactDetailScreen", "Error creating custom marker bitmap", e)
+                                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
                                     }
                                 }
 
                                 Marker(
-                                    state = MarkerState(position = mapTargetLocation), // mapTargetLocation no debe ser null en esta rama
-                                    icon = customIconWithLabel, // << CAMBIADO
-                                    anchor = Offset(0.5f, 0.95f) // << AÑADIDO (ajusta el valor Y según sea necesario)
-
+                                    state = MarkerState(position = mapTargetLocation),
+                                    icon = customIconWithLabel,
+                                    anchor = Offset(0.5f, 0.95f)
                                 )
                             }
                         }
-                        else -> {
+                        else -> { // Fallback por si isLoading es true pero no hay error ni dirección, etc.
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
@@ -380,6 +476,9 @@ fun ContactDetailScreen(
                                     )
                                     .padding(16.dp)
                             ) {
+                                // Podrías tener un Text("Cargando mapa...") aquí si isLoadingMap es true
+                                // o un Text(stringResource(id = R.string.map_unavailable)) si no hay datos para el mapa.
+                                // Por ahora, mantendré el genérico.
                                 Text(
                                     text = stringResource(id = R.string.map_unavailable),
                                     textAlign = TextAlign.Center,
@@ -399,6 +498,7 @@ fun DetailEntryStyled(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
+    trailingIcon: (@Composable () -> Unit)? = null
 ) {
     val labelHorizontalPadding = 6.dp
     val labelVerticalPadding = 1.dp
@@ -413,19 +513,25 @@ fun DetailEntryStyled(
             .fillMaxWidth()
             .padding(top = labelHeightEstimate / 2)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
                     BorderStroke(borderWidth, outlineColor),
                     RoundedCornerShape(cornerRadius)
                 )
-                .padding(horizontal = 12.dp, vertical = 12.dp)
+                .padding(horizontal = 12.dp, vertical = 8.dp), // Cambiado el padding vertical a 8.dp como en tu original
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+                modifier = Modifier.weight(1f)
             )
+            if (trailingIcon != null) {
+                Spacer(Modifier.width(8.dp))
+                trailingIcon()
+            }
         }
 
         Text(
@@ -438,7 +544,6 @@ fun DetailEntryStyled(
                 .offset(
                     x = 12.dp,
                     y = -(labelHeightEstimate / 2)
-
                 )
                 .zIndex(1f)
                 .background(labelBackgroundColor)
@@ -460,10 +565,9 @@ fun NotesDetailItemWithInternalScroll(label: String, value: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp) // Manteniendo tu padding original aquí
             .padding(top = labelHeightEstimate / 2)
     ) {
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -473,12 +577,12 @@ fun NotesDetailItemWithInternalScroll(label: String, value: String) {
                     outlineColor,
                     RoundedCornerShape(cornerRadius)
                 )
-                .padding(horizontal = 12.dp, vertical = 12.dp)
+                .padding(horizontal = 12.dp, vertical = 12.dp) // Manteniendo tu padding original aquí
         ) {
             val scrollState = rememberScrollState()
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp), // Manteniendo tu estilo
                 modifier = Modifier.verticalScroll(scrollState)
             )
         }

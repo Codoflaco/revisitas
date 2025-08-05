@@ -1,4 +1,4 @@
-package com.example.revisit.data.db
+package com.example.revisit.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,7 +14,7 @@ data class ContactEntity(
     val name: String,
     val lastName: String?,
     val territory: Int?,
-    val profile: String?,
+    val imageUri: String? =  null,
     val address: String?,
     val phoneNumber: String?,
 

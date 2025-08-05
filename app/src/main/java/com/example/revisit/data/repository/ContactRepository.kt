@@ -1,7 +1,7 @@
-package com.example.revisit.data
+package com.example.revisit.data.repository
 
-import com.example.revisit.data.db.ContactEntity
-import com.example.revisit.data.db.ContactDao
+import com.example.revisit.data.local.ContactDao
+import com.example.revisit.data.local.ContactEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -7,8 +7,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel // Este import es correcto
 import androidx.navigation.compose.rememberNavController
 import com.example.revisit.RevisitApplication
 import com.example.revisit.ui.theme.RevisitTheme
-import com.example.revisit.ui.screens.AppNavigation
+import com.example.revisit.ui.navigation.AppNavigation
 import androidx.compose.foundation.isSystemInDarkTheme
+import com.example.revisit.ui.contacts.ContactViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

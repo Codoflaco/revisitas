@@ -1,4 +1,4 @@
-package com.example.revisit.data.db
+package com.example.revisit.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -1,9 +1,9 @@
-package com.example.revisit.ui.util
+package com.example.revisit.util
 
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
-import com.example.revisit.data.db.ContactEntity
+import com.example.revisit.data.local.ContactEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File

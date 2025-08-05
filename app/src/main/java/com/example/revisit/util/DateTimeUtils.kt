@@ -1,5 +1,4 @@
-// File: com/example/revisit/ui/util/DateTimeUtils.kt
-package com.example.revisit.ui.util
+package com.example.revisit.util
 
 import android.content.Context
 import android.text.format.DateFormat
