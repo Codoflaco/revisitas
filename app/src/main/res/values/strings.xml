@@ -135,6 +135,13 @@
     <string name="image_not_available">Imagen no disponible</string>
     <string name="loading_contact_details">Cargando detalles del contacto...</string>
     <string name="contact_not_found">Contacto no encontrado.</string>
+    <!-- ... tus otros strings ... -->
+    <string name="action_call_desc">Llamar</string>
+    <string name="action_message_desc">Enviar mensaje</string>
+    <string name="error_no_dialer_app">No se encontró una aplicación para realizar llamadas.
+    </string>
+    <string name="error_no_messaging_app">No se encontró una aplicación para enviar mensajes.
+    </string>
 
 
 

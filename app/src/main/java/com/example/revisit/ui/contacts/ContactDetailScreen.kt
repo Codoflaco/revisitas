@@ -1,8 +1,8 @@
 package com.example.revisit.ui.contacts
 
 import android.location.Geocoder
-import android.net.Uri // AÑADIDO para Uri.encode
-import android.widget.Toast // AÑADIDO para Toast
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,13 +18,14 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Image // AÑADIDO para el icono de imagen
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,7 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip // AÑADIDO para el clip del mapa (estaba en tu código original en una sección que no se incluyó antes)
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -56,7 +57,6 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.revisit.R
 import com.example.revisit.data.local.ContactEntity
-// import com.example.revisit.ui.contacts.ContactViewModel // Ya está importado, no duplicar
 import com.example.revisit.util.DateTimeUtils
 import com.example.revisit.ui.util.VisitStatusColorUtil
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -70,14 +70,24 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.io.IOException
 import android.util.Log
+import androidx.compose.foundation.layout.RowScope
 import com.example.revisit.ui.util.createMarkerWithLabelBitmap
+
+import android.content.Intent // Asegúrate que esta línea esté presente
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.material.icons.filled.Call // Icono para llamar
+import androidx.compose.material.icons.filled.Chat // Icono para mensaje (o puedes usar Icons.Filled.Message)
+import androidx.compose.foundation.layout.fillMaxHeight
+// Si prefieres el icono de mensaje tradicional:
+// import androidx.compose.material.icons.filled.Message
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactDetailScreen(
     navController: NavController,
     contactId: Int,
-    viewModel: ContactViewModel
+    viewModel: ContactViewModel,
 ) {
     val context = LocalContext.current
     var contact by remember { mutableStateOf<ContactEntity?>(null) }
@@ -283,26 +293,86 @@ fun ContactDetailScreen(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+//                        verticalAlignment = androidx . compose . ui . Alignment.Top // Alinea los DetailEntryStyled po
+//                    ) {
+//                        currentContact.phoneNumber?.takeIf { it.isNotBlank() }?.let {
+//                            DetailEntryStyled(
+//                                label = stringResource(id = R.string.phone_number_label),
+//                                value = it,
+//                                modifier = Modifier.weight(1f)
+//                            )
+//                        } ?: Spacer(Modifier.weight(1f))
+//
+//
+//
+//                        currentContact.territory?.toString()?.takeIf { it.isNotBlank() }?.let {
+//                            DetailEntryStyled(
+//                                label = stringResource(id = R.string.territory_label),
+//                                value = it,
+//                                modifier = Modifier.weight(1f)
+//                            )
+//                        } ?: Spacer(Modifier.weight(1f))
+//                    }
+
+                    // --- INICIO: Fila modificada para Teléfono y Territorio ---
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        modifier = Modifier.fillMaxWidth()
+                        .height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        //verticalAlignment = Alignment.Top // Manteniendo tu alineación original
                     ) {
-                        currentContact.phoneNumber?.takeIf { it.isNotBlank() }?.let {
+                        currentContact.phoneNumber?.takeIf { it.isNotBlank() }?.let { phoneNumber ->
                             DetailEntryStyled(
                                 label = stringResource(id = R.string.phone_number_label),
-                                value = it,
-                                modifier = Modifier.weight(1f)
+                                value = phoneNumber,
+                                modifier = Modifier.weight(0.8f) // Peso ajustado para teléfono
+                                .fillMaxHeight(),
+                                trailingIcons = {
+                                    IconButton(onClick = {
+                                        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber"))
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            Log.e("ContactDetailScreen", "Error al intentar ACTION_DIAL para $phoneNumber", e)
+                                            Toast.makeText(context, context.getString(R.string.error_no_dialer_app), Toast.LENGTH_SHORT).show()
+                                        }
+                                    }) {
+                                        Icon(
+                                            Icons.Filled.Call,
+                                            contentDescription = stringResource(id = R.string.action_call_desc) // Necesitarás este string
+                                        )
+                                    }
+                                    IconButton(onClick = {
+                                        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$phoneNumber"))
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            Log.e("ContactDetailScreen", "Error al intentar ACTION_SENDTO para $phoneNumber", e)
+                                            Toast.makeText(context, context.getString(R.string.error_no_messaging_app), Toast.LENGTH_SHORT).show()
+                                        }
+                                    }) {
+                                        Icon(
+                                            Icons.Filled.Chat, // Usando Chat, puedes cambiar a Message si prefieres
+                                            contentDescription = stringResource(id = R.string.action_message_desc) // Necesitarás este string
+                                        )
+                                    }
+                                }
                             )
-                        } ?: Spacer(Modifier.weight(1f))
+                        } ?: Spacer(Modifier.weight(0.8f).fillMaxHeight()) // Mantener el espacio si no hay teléfono
 
                         currentContact.territory?.toString()?.takeIf { it.isNotBlank() }?.let {
                             DetailEntryStyled(
                                 label = stringResource(id = R.string.territory_label),
                                 value = it,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(0.2f)
+                                    .fillMaxHeight()// Peso ajustado para territorio
                             )
-                        } ?: Spacer(Modifier.weight(1f))
+                        } ?: Spacer(Modifier.weight(0.2f).fillMaxHeight()) // Mantener el espacio si no hay territorio
                     }
+                    // --- FIN: Fila modificada para Teléfono y Territorio ---
                     Spacer(modifier = Modifier.height(16.dp))
 
                     currentContact.address?.takeIf { it.isNotBlank() }?.let {addressValue ->
@@ -346,7 +416,6 @@ fun ContactDetailScreen(
                         .padding(bottom = 16.dp)
                 ) {
                     val mapTargetLocation = contactLatLng
-                    // Manteniendo tu valor original de fallbackLocation
                     val defaultFallbackLocation = LatLng(41.159209110957576, -74.2551922625656)
                     Log.d("ContactDetail_Debug", "Valor de defaultFallbackLocation ANTES de rememberCameraPositionState: $defaultFallbackLocation")
 
@@ -413,7 +482,9 @@ fun ContactDetailScreen(
                         }
                         mapTargetLocation != null -> {
                             GoogleMap(
-                                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)), // Manteniendo tu clip original
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(8.dp)), // Manteniendo tu clip original
                                 cameraPositionState = cameraPositionState,
                                 uiSettings = MapUiSettings(
                                     zoomControlsEnabled = true,
@@ -498,7 +569,7 @@ fun DetailEntryStyled(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
-    trailingIcon: (@Composable () -> Unit)? = null
+    trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     val labelHorizontalPadding = 6.dp
     val labelVerticalPadding = 1.dp
@@ -507,6 +578,7 @@ fun DetailEntryStyled(
     val borderWidth = 1.dp
     val labelHeightEstimate = 18.dp
     val labelBackgroundColor = colorScheme.background
+    val minEntryHeight = 52.dp
 
     Box(
         modifier = modifier
@@ -516,6 +588,8 @@ fun DetailEntryStyled(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
+                .defaultMinSize(minHeight = minEntryHeight)
                 .border(
                     BorderStroke(borderWidth, outlineColor),
                     RoundedCornerShape(cornerRadius)
@@ -529,6 +603,86 @@ fun DetailEntryStyled(
                 modifier = Modifier.weight(1f)
             )
             if (trailingIcon != null) {
+                Spacer(Modifier.width(8.dp))
+                trailingIcon()
+            }
+        }
+
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp),
+            fontWeight = FontWeight.Medium,
+            color = colorScheme.primary,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset(
+                    x = 12.dp,
+                    y = -(labelHeightEstimate / 2)
+                )
+                .zIndex(1f)
+                .background(labelBackgroundColor)
+                .padding(horizontal = labelHorizontalPadding, vertical = labelVerticalPadding)
+        )
+    }
+}
+
+@Composable
+fun DetailEntryStyled(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    trailingIcon: (@Composable () -> Unit)? = null, // Se mantiene por ahora
+    trailingIcons: (@Composable RowScope.() -> Unit)? = null, // NUEVO PARÁMETRO
+) {
+    val labelHorizontalPadding = 6.dp
+    val labelVerticalPadding = 1.dp
+    val outlineColor = colorScheme.outline.copy(alpha = 0.8f)
+    val cornerRadius = 8.dp
+    val borderWidth = 1.dp
+    val labelHeightEstimate = 18.dp
+    val labelBackgroundColor = colorScheme.background
+    val minEntryHeight = 56.dp
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = labelHeightEstimate / 2)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = minEntryHeight)
+                .border(
+                    BorderStroke(borderWidth, outlineColor),
+                    RoundedCornerShape(cornerRadius)
+                )
+                // Ajustar padding para acomodar iconos si están presentes
+                .padding(
+                    start = 12.dp,
+                    end = if (trailingIcons != null || trailingIcon != null) 4.dp else 12.dp, // Menos padding al final si hay iconos
+                    top = 8.dp,
+                    bottom = 8.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
+                modifier = Modifier.weight(1f) // El texto toma el espacio disponible
+            )
+
+            // Lógica para mostrar los nuevos iconos múltiples primero
+            if (trailingIcons != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.padding(start = 8.dp) // Espacio entre el texto y los iconos
+                ) {
+                    trailingIcons() // Ejecuta el Composable que contiene los IconButton
+                }
+            }
+            // Fallback al antiguo trailingIcon si el nuevo no se provee y el antiguo sí
+            else if (trailingIcon != null) {
                 Spacer(Modifier.width(8.dp))
                 trailingIcon()
             }
@@ -603,3 +757,5 @@ fun NotesDetailItemWithInternalScroll(label: String, value: String) {
         )
     }
 }
+
+
