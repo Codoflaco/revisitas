@@ -578,7 +578,7 @@ fun DetailEntryStyled(
     val borderWidth = 1.dp
     val labelHeightEstimate = 18.dp
     val labelBackgroundColor = colorScheme.background
-    val minEntryHeight = 52.dp
+    val minEntryHeight = 52.dp // Prueba
 
     Box(
         modifier = modifier
