@@ -72,12 +72,14 @@ import java.io.IOException
 import android.util.Log
 import androidx.compose.foundation.layout.RowScope
 import com.example.revisit.ui.util.createMarkerWithLabelBitmap
-
-import android.content.Intent // Asegúrate que esta línea esté presente
+import androidx.compose.material.icons.automirrored.filled.Chat
+import android.content.Intent
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.material.icons.filled.Call // Icono para llamar
-import androidx.compose.material.icons.filled.Chat // Icono para mensaje (o puedes usar Icons.Filled.Message)
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+
 // Si prefieres el icono de mensaje tradicional:
 // import androidx.compose.material.icons.filled.Message
 
@@ -325,6 +327,9 @@ fun ContactDetailScreen(
                         //verticalAlignment = Alignment.Top // Manteniendo tu alineación original
                     ) {
                         currentContact.phoneNumber?.takeIf { it.isNotBlank() }?.let { phoneNumber ->
+                            // Estado para controlar la visibilidad del menú de mensajes
+                            var showMessageOptions by remember { mutableStateOf(false) }
+
                             DetailEntryStyled(
                                 label = stringResource(id = R.string.phone_number_label),
                                 value = phoneNumber,
@@ -345,19 +350,59 @@ fun ContactDetailScreen(
                                             contentDescription = stringResource(id = R.string.action_call_desc) // Necesitarás este string
                                         )
                                     }
-                                    IconButton(onClick = {
-                                        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$phoneNumber"))
-                                        try {
-                                            context.startActivity(intent)
-                                        } catch (e: Exception) {
-                                            Log.e("ContactDetailScreen", "Error al intentar ACTION_SENDTO para $phoneNumber", e)
-                                            Toast.makeText(context, context.getString(R.string.error_no_messaging_app), Toast.LENGTH_SHORT).show()
+                                    Box { // <--- ENVOLVER IconButton EN UN Box PARA ANCLAR EL MENÚ
+                                        IconButton(onClick = {
+                                            showMessageOptions = true // <--- Mostrar el menú
+                                        }) {
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.Chat, // O Icons.AutoMirrored.Filled.Chat si usas iconos automirrored
+                                                contentDescription = stringResource(id = R.string.action_message_desc)
+                                            )
                                         }
-                                    }) {
-                                        Icon(
-                                            Icons.Filled.Chat, // Usando Chat, puedes cambiar a Message si prefieres
-                                            contentDescription = stringResource(id = R.string.action_message_desc) // Necesitarás este string
-                                        )
+
+                                        // DropdownMenu para las opciones de mensaje
+                                        DropdownMenu(
+                                            expanded = showMessageOptions,
+                                            onDismissRequest = { showMessageOptions = false }
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = { Text("SMS") },
+                                                onClick = {
+                                                    showMessageOptions = false // Ocultar menú
+                                                    val smsIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$phoneNumber"))
+                                                    try {
+                                                        context.startActivity(smsIntent)
+                                                    } catch (e: Exception) {
+                                                        Log.e("ContactDetailScreen", "Error al intentar ACTION_SENDTO (SMS) para $phoneNumber", e)
+                                                        Toast.makeText(context, context.getString(R.string.error_no_messaging_app), Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text("WhatsApp") },
+                                                onClick = {
+                                                    showMessageOptions = false // Ocultar menú
+                                                    // Formato de URI para WhatsApp: "https://wa.me/codigoPaisNumero"
+                                                    // Necesitarás una forma de obtener/asumir el código de país si no está en phoneNumber
+                                                    // Por ahora, asumiré que phoneNumber puede no tenerlo y WhatsApp podría manejarlo o no.
+                                                    // Una solución más robusta implicaría limpiar/formatear phoneNumber.
+                                                    val strippedPhoneNumber = phoneNumber.filter { it.isDigit() } // Quita no dígitos
+                                                    val whatsappUri = Uri.parse("https://wa.me/$strippedPhoneNumber")
+                                                    val whatsappIntent = Intent(Intent.ACTION_VIEW, whatsappUri)
+                                                    // No es necesario whatsappIntent.setPackage("com.whatsapp") explícitamente,
+                                                    // ACTION_VIEW con la URI correcta es más flexible si WhatsApp Business u otros están instalados.
+                                                    // Sin embargo, si quieres forzar solo "com.whatsapp", puedes añadirlo.
+                                                    // whatsappIntent.setPackage("com.whatsapp") // Descomentar si quieres forzar WhatsApp estándar
+
+                                                    try {
+                                                        context.startActivity(whatsappIntent)
+                                                    } catch (e: Exception) {
+                                                        Log.e("ContactDetailScreen", "Error al intentar abrir WhatsApp para $strippedPhoneNumber", e)
+                                                        Toast.makeText(context, context.getString(R.string.error_whatsapp_not_installed), Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             )

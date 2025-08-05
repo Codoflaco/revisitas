@@ -142,6 +142,7 @@
     </string>
     <string name="error_no_messaging_app">No se encontró una aplicación para enviar mensajes.
     </string>
+    <string name = "error_whatsapp_not_installed">No está instalado WhatsApp</string>
 
 
 
