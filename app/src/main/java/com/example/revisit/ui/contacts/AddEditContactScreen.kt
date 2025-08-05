@@ -531,7 +531,7 @@ fun AddEditContactScreen(
                                         nextVisitTimestamp = nextVisitTimestampState,
                                         pickedLatitude = latitudeState, // Guardar latitud
                                         pickedLongitude = longitudeState, // Guardar longitud
-                                        lastInteractionTimestamp = System.currentTimeMillis() // Asumo que esto se sigue necesitando
+                                        //lastInteractionTimestamp = System.currentTimeMillis() // Asumo que esto se sigue necesitando
                                     )
                                     val message = if (contactId == null) {
                                         context.getString(R.string.contact_created_successfully, contactName)
