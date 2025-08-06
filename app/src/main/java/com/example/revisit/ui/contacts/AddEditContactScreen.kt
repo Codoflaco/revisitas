@@ -70,6 +70,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -115,19 +116,19 @@ fun AddEditContactScreen(
     contactId: Int? = null,
 ) {
     val context = LocalContext.current
-    var name by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var territoryString by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var lastName by rememberSaveable { mutableStateOf("") }
+    var phoneNumber by rememberSaveable { mutableStateOf("") }
+    var address by rememberSaveable { mutableStateOf("") }
+    var territoryString by rememberSaveable { mutableStateOf("") }
+    var notes by rememberSaveable { mutableStateOf("") }
 
     // Estado para la URI de la imagen. Se guarda como String en la entidad.
-    var imageUriString by remember { mutableStateOf("") }
+    var imageUriString by rememberSaveable { mutableStateOf("") }
     // URI temporal para la foto tomada por la cámara antes de confirmación
     var tempCameraPhotoUri by remember { mutableStateOf<Uri?>(null) }
     // Controla la visibilidad del diálogo de confirmación de foto
-    var showPhotoConfirmationDialog by remember { mutableStateOf(false) }
+    var showPhotoConfirmationDialog by rememberSaveable { mutableStateOf(false) }
 
 
     // --- INICIO: Lógica para TOMAR FOTO CON CÁMARA ---
@@ -235,29 +236,29 @@ fun AddEditContactScreen(
 
 
     // Estados para latitud y longitud
-    var latitudeState by remember { mutableStateOf<Double?>(null) }
-    var longitudeState by remember { mutableStateOf<Double?>(null) }
+    var latitudeState by rememberSaveable { mutableStateOf<Double?>(null) }
+    var longitudeState by rememberSaveable { mutableStateOf<Double?>(null) }
 
-    var creationOrFirstVisitTimestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var creationOrFirstVisitTimestamp by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
     val creationTimePickerState = rememberTimePickerState(
         initialHour = DateTimeUtils.getHourDevice(creationOrFirstVisitTimestamp),
         initialMinute = DateTimeUtils.getMinuteDevice(creationOrFirstVisitTimestamp),
         is24Hour = DateTimeUtils.isSystem24Hour(context)
     )
-    var showCreationTimeDialog by remember { mutableStateOf(false) }
+    var showCreationTimeDialog by rememberSaveable { mutableStateOf(false) }
 
-    var nextVisitTimestampState by remember { mutableLongStateOf(DateTimeUtils.getDefaultNextVisitDateTime()) }
+    var nextVisitTimestampState by rememberSaveable { mutableLongStateOf(DateTimeUtils.getDefaultNextVisitDateTime()) }
     val nextVisitDatePickerState = rememberDatePickerState(
         initialSelectedDateMillis = nextVisitTimestampState
     )
-    var showNextVisitDateDialog by remember { mutableStateOf(false) }
+    var showNextVisitDateDialog by rememberSaveable { mutableStateOf(false) }
 
     val nextVisitTimePickerState = rememberTimePickerState(
         initialHour = DateTimeUtils.getHourDevice(nextVisitTimestampState),
         initialMinute = DateTimeUtils.getMinuteDevice(nextVisitTimestampState),
         is24Hour = DateTimeUtils.isSystem24Hour(context)
     )
-    var showNextVisitTimeDialog by remember { mutableStateOf(false) }
+    var showNextVisitTimeDialog by rememberSaveable { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
@@ -568,12 +569,16 @@ fun AddEditContactScreen(
         content = { paddingValues ->
             if (isLoading && initialDataLoaded && contactId != null) { // Condición original
                 Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
             } else if (!initialDataLoaded && contactId != null) { // Condición original
                 Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) { CircularProgressIndicator() }
             } else {
@@ -752,7 +757,8 @@ fun AddEditContactScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimePickerDialog( // Tu Composable original
+fun TimePickerDialog(
+    // Tu Composable original
     title: String,
     state: TimePickerState,
     onDismiss: () -> Unit,

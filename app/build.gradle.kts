@@ -83,7 +83,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3) // Esta tomará la versión del BOM. Asegúrate que sea compatible o >= 1.3.1
-    // implementation("androidx.compose.material3:material3:1.3.1") // Eliminado, usar la del BOM
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.9.0") // Asegúrate que esta versión sea la deseada
@@ -130,4 +129,7 @@ dependencies {
     // Take photo
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
+    // Dialing phone numbers
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.36")
 }

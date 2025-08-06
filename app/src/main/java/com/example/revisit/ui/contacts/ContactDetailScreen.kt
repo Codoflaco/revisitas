@@ -79,9 +79,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-
-// Si prefieres el icono de mensaje tradicional:
-// import androidx.compose.material.icons.filled.Message
+import com.example.revisit.util.PhoneNumberHelper
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,6 +90,13 @@ fun ContactDetailScreen(
     viewModel: ContactViewModel,
 ) {
     val context = LocalContext.current
+
+    var defaultDeviceRegion by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(key1 = context) {
+        defaultDeviceRegion = PhoneNumberHelper.getDeviceCountryCode(context)
+        Log.d("ContactDetailScreen", "Región por defecto del dispositivo: $defaultDeviceRegion")
+    }
+
     var contact by remember { mutableStateOf<ContactEntity?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var contactLatLng by remember { mutableStateOf<LatLng?>(null) }
@@ -224,9 +229,14 @@ fun ContactDetailScreen(
                     // --- INICIO: IconButton para ver foto ---
                     IconButton(onClick = {
                         val currentContact = contact // Captura el estado actual
-                        if (currentContact != null && !currentContact.imageUri.isNullOrBlank()) {
+                        if (currentContact != null && !currentContact.imageUri.isNullOrBlank()
+                            && // (1)
+                            currentContact.imageUri != "null"
+                            ) {
                             // Asumiendo que 'imageUri' es el campo en ContactEntity
                             val encodedImageUri = Uri.encode(currentContact.imageUri)
+                            Log.d("PhotoDebug", "URI Original: '${currentContact.imageUri}'")
+                            Log.d("PhotoDebug", "URI Codificada para Navegación: '$encodedImageUri'")
                             navController.navigate("photoViewScreen/$encodedImageUri")
                         } else {
                             val toastMessage = if (currentContact != null) {
@@ -337,12 +347,38 @@ fun ContactDetailScreen(
                                 .fillMaxHeight(),
                                 trailingIcons = {
                                     IconButton(onClick = {
-                                        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber"))
-                                        try {
-                                            context.startActivity(intent)
-                                        } catch (e: Exception) {
-                                            Log.e("ContactDetailScreen", "Error al intentar ACTION_DIAL para $phoneNumber", e)
-                                            Toast.makeText(context, context.getString(R.string.error_no_dialer_app), Toast.LENGTH_SHORT).show()
+
+                                        // Validar ANTES de intentar la acción
+                                        if (!PhoneNumberHelper.isValidPhoneNumber(phoneNumber, defaultDeviceRegion)) {
+                                            Toast.makeText(context, context.getString(R.string.invalid_phone_number_format), Toast.LENGTH_LONG).show()
+                                            // Podrías retornar o no hacer nada si el número no es válido para marcar
+                                            // Por ahora, intentaremos igual con el número formateado/limpio por getNumberForDialingOrSms
+                                        }
+                                        Log.d("DIAL_DEBUG", "Paso 1: Número original de la fuente: '$phoneNumber'")
+                                        Log.d("DIAL_DEBUG", "Paso 2: Región por defecto a usar: '$defaultDeviceRegion''")
+
+                                        val dialableNumber = PhoneNumberHelper.getNumberForDialingOrSms(phoneNumber, defaultDeviceRegion)
+                                        Log.d("ContactDetailScreen", "Intentando marcar: $dialableNumber (original: $phoneNumber)")
+                                        Log.d("DIAL_DEBUG", "Paso 3: Número devuelto por getNumberForDialingOrSms: '$dialableNumber'")
+
+                                        if (dialableNumber.isNotBlank()) { // Buena práctica añadir esta comprobación
+                                            val scheme = "tel"
+                                            // Usar Uri.fromParts para asegurar que el '+' (si está presente en dialableNumber)
+                                            // se maneje de forma que el marcador lo reconozca.
+                                            val uri: Uri = Uri.fromParts(scheme, dialableNumber, null)
+
+                                            Log.d("DIAL_DEBUG", "Paso 4 (Usando Uri.fromParts): URI.toString(): '${uri.toString()}'")
+
+                                            val intent = Intent(Intent.ACTION_DIAL, uri)
+                                            try {
+                                                context.startActivity(intent)
+                                            } catch (e: Exception) {
+                                                Log.e("ContactDetailScreen", "Error al intentar ACTION_DIAL para '$dialableNumber' (URI: '$uri')", e)
+                                                Toast.makeText(context, context.getString(R.string.error_no_dialer_app), Toast.LENGTH_SHORT).show()
+                                            }
+                                        } else {
+                                            Log.w("DIAL_DEBUG", "dialableNumber está vacío, no se puede marcar.")
+                                            Toast.makeText(context, "Número inválido para marcar.", Toast.LENGTH_SHORT).show()
                                         }
                                     }) {
                                         Icon(
