@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.revisit"
-    compileSdk = 35
+    compileSdk = 36
 
     buildFeatures {
         buildConfig = true  // <--- ¡ESTA ES LA LÍNEA CLAVE!
@@ -20,9 +20,9 @@ android {
     defaultConfig {
         applicationId = "com.isaiasmonroy.revisit"
         minSdk = 21
-        targetSdk = 35
-        versionCode = 2
-        versionName = "1.1"
+        targetSdk = 36
+        versionCode = 4
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -49,12 +49,18 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true // Activa la optimización y genera el archivo de mapeo
+            isShrinkResources = true // Elimina recursos que no se usan para reducir tamaño
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
+            
+            // Soluciona la advertencia de símbolos nativos
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
     compileOptions {
