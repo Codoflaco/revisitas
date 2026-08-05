@@ -14,15 +14,15 @@ android {
     buildFeatures {
         buildConfig = true  // <--- ¡ESTA ES LA LÍNEA CLAVE!
         compose = true      // Si usas Compose, mantenla
-        // ... otras features que puedas tener ...
+        // ... Otras features que puedas tener ...
     }
 
     defaultConfig {
         applicationId = "com.isaiasmonroy.revisit"
         minSdk = 21
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.2"
+        versionCode = 5
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -128,7 +128,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom)) // BOM para pruebas de Compose
+    //androidTestImplementation(platform(libs.androidx.compose.bom)) // BOM para pruebas de Compose
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
